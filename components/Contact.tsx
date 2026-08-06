@@ -1,10 +1,10 @@
 import SectionWrapper from "./SectionWrapper";
+import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
 
 const links = [
-  { label: "Email", value: "x2022fcb@stfx.ca", href: "x2022fcb@stfx.ca" },
+  { label: "Email", value: "x2022fcb@stfx.ca", href: "mailto:x2022fcb@stfx.ca" },
   { label: "LinkedIn", value: "Bhavpreet's LinkedIn", href: "https://www.linkedin.com/in/bhavpreetsingharneja/" },
   { label: "GitHub", value: "Github", href: "https://github.com/BSA-99" },
-  { label: "Résumé", value: "Download PDF", href: "/resume.pdf" },
 ];
 
 export default function Contact() {
@@ -30,6 +30,25 @@ export default function Contact() {
             </a>
           </li>
         ))}
+        <li>
+          {RESUME_AVAILABLE ? (
+            <a href={RESUME_HREF} className="group flex items-baseline gap-3 text-lg">
+              <span className="text-blue">Résumé</span>
+              <span className="text-muted transition-colors group-hover:text-text">
+                Download PDF
+              </span>
+            </a>
+          ) : (
+            <span
+              aria-disabled="true"
+              title="Coming soon"
+              className="flex cursor-not-allowed items-baseline gap-3 text-lg opacity-40"
+            >
+              <span className="text-blue">Résumé</span>
+              <span className="text-muted">Coming soon</span>
+            </span>
+          )}
+        </li>
       </ul>
 
       <p className="mt-20 text-xs text-muted">© 2026 Bhavpreet Singh Arneja</p>

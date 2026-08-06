@@ -1,5 +1,7 @@
 "use client";
 
+import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
+
 const navLinks = [
   { number: "01", label: "Work", href: "#work" },
   { number: "02", label: "Projects", href: "#projects" },
@@ -27,12 +29,22 @@ export default function Nav() {
             </li>
           ))}
         </ul>
-        <a
-          href="/resume.pdf"
-          className="rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90"
-        >
-          Résumé
-        </a>
+        {RESUME_AVAILABLE ? (
+          <a
+            href={RESUME_HREF}
+            className="rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90"
+          >
+            Résumé
+          </a>
+        ) : (
+          <span
+            aria-disabled="true"
+            title="Coming soon"
+            className="cursor-not-allowed rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg opacity-40"
+          >
+            Résumé
+          </span>
+        )}
       </nav>
     </header>
   );

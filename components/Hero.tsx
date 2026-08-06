@@ -1,14 +1,15 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
+import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
 
-const container = {
+const container: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08 } },
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
@@ -63,12 +64,22 @@ export default function Hero() {
           >
             See the work
           </a>
-          <a
-            href="/resume.pdf"
-            className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:border-text"
-          >
-            Résumé
-          </a>
+          {RESUME_AVAILABLE ? (
+            <a
+              href={RESUME_HREF}
+              className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:border-text"
+            >
+              Résumé
+            </a>
+          ) : (
+            <span
+              aria-disabled="true"
+              title="Coming soon"
+              className="cursor-not-allowed rounded-full border border-border px-6 py-3 text-sm font-medium opacity-40"
+            >
+              Résumé
+            </span>
+          )}
         </motion.div>
       </motion.div>
 
