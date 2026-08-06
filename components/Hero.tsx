@@ -2,7 +2,6 @@
 
 import { motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
-import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
 
 const container: Variants = {
   hidden: {},
@@ -64,22 +63,12 @@ export default function Hero() {
           >
             See the work
           </a>
-          {RESUME_AVAILABLE ? (
-            <a
-              href={RESUME_HREF}
-              className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:border-text"
-            >
-              Résumé
-            </a>
-          ) : (
-            <span
-              aria-disabled="true"
-              title="Coming soon"
-              className="cursor-not-allowed rounded-full border border-border px-6 py-3 text-sm font-medium opacity-40"
-            >
-              Résumé
-            </span>
-          )}
+          <a
+            href="/resume.pdf"
+            className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:border-text"
+          >
+            Résumé
+          </a>
         </motion.div>
       </motion.div>
 
