@@ -3,8 +3,9 @@
 const navLinks = [
   { number: "01", label: "Work", href: "#work" },
   { number: "02", label: "Projects", href: "#projects" },
-  { number: "03", label: "About", href: "#about" },
-  { number: "04", label: "Contact", href: "#contact" },
+  { number: "03", label: "Practice", href: "#skills" },
+  { number: "04", label: "About", href: "#about" },
+  { number: "05", label: "Contact", href: "#contact" },
 ];
 
 export default function Nav() {
