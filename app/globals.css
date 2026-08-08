@@ -11,10 +11,21 @@
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+
+  --animate-metal-sheen: metal-sheen 4s linear infinite;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
+}
+
+@keyframes metal-sheen {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 250% 0%;
+  }
 }

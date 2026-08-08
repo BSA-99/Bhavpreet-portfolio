@@ -2,6 +2,7 @@
 
 import { motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
+import MagneticButton from "@/components/MagneticButton";
 
 const container: Variants = {
   hidden: {},
@@ -57,18 +58,22 @@ export default function Hero() {
         </motion.p>
 
         <motion.div variants={item} className="mt-8 flex gap-4">
-          <a
-            href="#projects"
-            className="rounded-full bg-tangerine px-6 py-3 text-sm font-medium text-bg transition-opacity hover:opacity-90"
-          >
-            See the work
-          </a>
-          <a
-            href="/resume.pdf"
-            className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:border-text"
-          >
-            Résumé
-          </a>
+          <MagneticButton>
+            <a
+              href="#projects"
+              className="rounded-full bg-tangerine px-6 py-3 text-sm font-medium text-bg transition-opacity hover:opacity-90"
+            >
+              See the work
+            </a>
+          </MagneticButton>
+          <MagneticButton>
+            <a
+              href="/resume.pdf"
+              className="rounded-full border border-border px-6 py-3 text-sm font-medium transition-colors hover:border-text"
+            >
+              Résumé
+            </a>
+          </MagneticButton>
         </motion.div>
       </motion.div>
 

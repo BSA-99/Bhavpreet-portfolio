@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-interface ProjectCardProps {
+export interface ProjectCardProps {
   title: string;
   description: string;
   tags: string[];

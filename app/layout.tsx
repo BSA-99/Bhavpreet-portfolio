@@ -1,4 +1,5 @@
 import Nav from "@/components/Nav";
+import SmoothScroll from "@/components/SmoothScroll";
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased`}>
+        <SmoothScroll />
         <Nav />
         {children}
       </body>

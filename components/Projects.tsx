@@ -1,5 +1,6 @@
 import SectionWrapper from "./SectionWrapper";
 import ProjectCard from "./ProjectCard";
+import FeaturedProjectCard from "./FeaturedProjectCard";
 
 const projects = [
   {
@@ -27,7 +28,7 @@ export default function Projects() {
   return (
     <SectionWrapper id="projects" number="02" title="Projects">
       <div className="space-y-6">
-        <ProjectCard {...featured} />
+        <FeaturedProjectCard {...featured} />
         <ProjectCard {...secondary} />
       </div>
     </SectionWrapper>
