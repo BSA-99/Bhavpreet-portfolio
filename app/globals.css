@@ -29,3 +29,74 @@ body {
     background-position: 250% 0%;
   }
 }
+
+@keyframes moveVertical {
+  0% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(50%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes moveInCircle {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes moveHorizontal {
+  0% {
+    transform: translateX(-50%) translateY(-10%);
+  }
+  50% {
+    transform: translateX(50%) translateY(10%);
+  }
+  100% {
+    transform: translateX(-50%) translateY(-10%);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+}
+
+.gradient-blob {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle at center, var(--blob-color) 0%, rgba(255, 255, 255, 0) 60%);
+  mix-blend-mode: hard-light;
+}
+
+.sparkle-accent {
+  animation: sparkleTwinkle 3s ease infinite;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-blob {
+    animation: none !important;
+  }
+
+  .sparkle-accent {
+    animation: none !important;
+    opacity: 0.6 !important;
+  }
+}

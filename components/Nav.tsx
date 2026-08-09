@@ -89,21 +89,21 @@ export default function Nav() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg/80 backdrop-blur-sm">
-        <nav className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 md:px-16">
+        <nav className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 md:px-16 lg:py-5">
           <a
             href="#"
-            className="font-display whitespace-nowrap text-[10px] font-medium tracking-tighter sm:text-sm sm:tracking-tight md:text-base md:tracking-normal"
+            className="font-display whitespace-nowrap text-[10px] font-medium tracking-tighter sm:text-sm sm:tracking-tight md:text-base md:tracking-normal lg:text-[18.5px]"
           >
             <LiquidMetalText text="BHAVPREET SINGH ARNEJA" />
           </a>
-          <ul className="hidden gap-8 lg:flex">
+          <ul className="hidden gap-9 lg:flex">
             {navLinks.map((link) => {
               const isActive = activeId === link.href.slice(1);
               return (
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className={`text-sm transition-colors ${
+                    className={`text-base transition-colors ${
                       isActive ? "text-tangerine" : "text-muted hover:text-text"
                     }`}
                   >
@@ -121,7 +121,7 @@ export default function Nav() {
               {RESUME_AVAILABLE ? (
                 <a
                   href={RESUME_HREF}
-                  className="rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90"
+                  className="rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 lg:px-6 lg:py-2.5 lg:text-base"
                 >
                   Résumé
                 </a>
@@ -129,7 +129,7 @@ export default function Nav() {
                 <span
                   aria-disabled="true"
                   title="Coming soon"
-                  className="cursor-not-allowed rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg opacity-40"
+                  className="cursor-not-allowed rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg opacity-40 lg:px-6 lg:py-2.5 lg:text-base"
                 >
                   Résumé
                 </span>
