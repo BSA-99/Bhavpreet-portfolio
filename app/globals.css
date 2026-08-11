@@ -7,10 +7,12 @@
   --color-muted: #6B6B65;
   --color-tangerine: #FF6B35;
   --color-blue: #3D5AFE;
+  --color-purple: #8B5CF6;
   --color-border: #E4E2D8;
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
 
   --animate-metal-sheen: metal-sheen 4s linear infinite;
 }
@@ -98,5 +100,145 @@ body {
   .sparkle-accent {
     animation: none !important;
     opacity: 0.6 !important;
+  }
+}
+
+/* --- Work section --- */
+
+@keyframes workDriftA {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(4%, -6%) scale(1.06);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes workDriftB {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-5%, 5%) scale(0.95);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.work-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  width: var(--blob-size);
+  height: var(--blob-size);
+  opacity: var(--blob-opacity);
+}
+
+@media (max-width: 899px) {
+  .work-blob {
+    width: calc(var(--blob-size) * 0.65);
+    height: calc(var(--blob-size) * 0.65);
+    opacity: calc(var(--blob-opacity) * 0.55);
+    filter: blur(70px);
+  }
+}
+
+@keyframes workPing {
+  75%,
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+.work-ping {
+  animation: workPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Card spotlight + masked-border glow, driven by --mx/--my/--accent set via ref mutation */
+.work-card {
+  position: relative;
+}
+
+.work-card::before,
+.work-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.work-card::before {
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), var(--accent, transparent) 0%, transparent 70%);
+  opacity: 0;
+}
+
+.work-card::after {
+  padding: 1px;
+  background: radial-gradient(160px circle at var(--mx, 50%) var(--my, 50%), var(--accent, transparent) 0%, transparent 70%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.work-card:hover::before {
+  opacity: 0.16;
+}
+
+.work-card:hover::after {
+  opacity: 1;
+}
+
+/* Photo hover pop — real-hover devices only; touch gets a much smaller pop */
+.work-photo {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
+}
+
+@media (hover: hover) {
+  .work-photo-left:hover,
+  .work-photo-right:hover {
+    transform: scale(1.34);
+    z-index: 10;
+    box-shadow: 0 24px 48px -12px color-mix(in srgb, var(--accent, #3D5AFE) 55%, transparent);
+  }
+}
+
+@media (hover: none) {
+  .work-photo-left:active,
+  .work-photo-right:active {
+    transform: scale(1.04);
+  }
+}
+
+.work-scanline {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(20, 20, 26, 0.06) 0px,
+    rgba(20, 20, 26, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-blob {
+    animation: none !important;
+  }
+
+  .work-ping {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .work-photo {
+    transition: none !important;
   }
 }
