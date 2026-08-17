@@ -6,11 +6,13 @@ import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
 import MagneticButton from "@/components/MagneticButton";
 import LiquidMetalText from "@/components/LiquidMetalText";
 
+/* Numbers follow page order: About, Work, Projects, Practice, Contact.
+   Slugs are unchanged so existing anchors and links keep working. */
 const navLinks = [
-  { number: "01", label: "Work", href: "#work" },
-  { number: "02", label: "Projects", href: "#projects" },
-  { number: "03", label: "Practice", href: "#skills" },
-  { number: "04", label: "About", href: "#about" },
+  { number: "01", label: "About", href: "#about" },
+  { number: "02", label: "Work", href: "#work" },
+  { number: "03", label: "Projects", href: "#projects" },
+  { number: "04", label: "Practice", href: "#skills" },
   { number: "05", label: "Contact", href: "#contact" },
 ];
 
@@ -88,26 +90,31 @@ export default function Nav() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg/80 backdrop-blur-sm">
-        <nav className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 md:px-16 lg:py-5">
+      <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
+        <nav className="glass mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-4 px-4 sm:h-[64px] sm:px-5">
           <a
             href="#"
-            className="font-display whitespace-nowrap text-[10px] font-medium tracking-tighter sm:text-sm sm:tracking-tight md:text-base md:tracking-normal lg:text-[18.5px]"
+            className="relative z-[2] font-display text-[11px] font-bold tracking-tight whitespace-nowrap sm:text-[13px] lg:text-[15px]"
           >
             <LiquidMetalText text="BHAVPREET SINGH ARNEJA" />
           </a>
-          <ul className="hidden gap-9 lg:flex">
+
+          <ul className="relative z-[2] hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => {
               const isActive = activeId === link.href.slice(1);
               return (
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className={`text-base transition-colors ${
-                      isActive ? "text-tangerine" : "text-muted hover:text-text"
+                    className={`font-body text-[14px] transition-colors duration-200 ${
+                      isActive ? "text-text" : "text-muted hover:text-text"
                     }`}
                   >
-                    <span className={isActive ? "text-tangerine" : "text-blue"}>
+                    <span
+                      className={`font-mono text-[11px] ${
+                        isActive ? "text-accent-ink" : "text-accent-2-ink/70"
+                      }`}
+                    >
                       {link.number}
                     </span>{" "}
                     {link.label}
@@ -116,12 +123,13 @@ export default function Nav() {
               );
             })}
           </ul>
-          <div className="flex items-center gap-3">
+
+          <div className="relative z-[2] flex items-center gap-2.5">
             <MagneticButton>
               {RESUME_AVAILABLE ? (
                 <a
                   href={RESUME_HREF}
-                  className="rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 lg:px-6 lg:py-2.5 lg:text-base"
+                  className="inline-flex whitespace-nowrap rounded-chip bg-text px-4 py-2 font-body text-[13px] font-medium text-bg transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:px-5 sm:py-2.5"
                 >
                   Résumé
                 </a>
@@ -129,17 +137,20 @@ export default function Nav() {
                 <span
                   aria-disabled="true"
                   title="Coming soon"
-                  className="cursor-not-allowed rounded-full bg-tangerine px-5 py-2 text-sm font-medium text-bg opacity-40 lg:px-6 lg:py-2.5 lg:text-base"
+                  className="inline-flex cursor-not-allowed whitespace-nowrap rounded-chip bg-text/45 px-4 py-2 font-body text-[13px] font-medium text-bg sm:px-5 sm:py-2.5"
                 >
                   Résumé
                 </span>
               )}
             </MagneticButton>
+
             <button
               type="button"
               onClick={() => setIsOpen((prev) => !prev)}
               aria-expanded={isOpen}
-              className="rounded-full border border-border px-5 py-2 text-sm font-medium transition-colors hover:border-text lg:hidden"
+              aria-label={isOpen ? "Close menu" : "Open menu"}
+              className="rounded-chip px-4 py-2 font-body text-[13px] font-medium text-text transition-colors duration-200 hover:bg-text/5 lg:hidden"
+              style={{ boxShadow: "inset 0 0 0 1px var(--color-border-strong)" }}
             >
               {isOpen ? "Close" : "Menu"}
             </button>
@@ -154,33 +165,37 @@ export default function Nav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed inset-0 z-40 flex flex-col justify-center bg-bg px-6 lg:hidden"
+            transition={{ duration: 0.28, ease: "easeOut" }}
+            className="fixed inset-0 z-40 flex flex-col justify-center bg-bg/85 px-8 backdrop-blur-2xl lg:hidden"
           >
             <motion.ul
               variants={container}
               initial="hidden"
               animate="show"
               exit="hidden"
-              className="flex flex-col gap-8"
+              className="flex flex-col gap-7"
             >
               {navLinks.map((link) => (
                 <motion.li key={link.href} variants={item}>
                   <a
                     href={link.href}
                     onClick={closeMenu}
-                    className="font-display text-4xl font-medium tracking-tight"
+                    className="font-display text-[34px] font-bold tracking-[-0.03em]"
                   >
-                    <span className="text-blue">{link.number}</span> {link.label}
+                    <span className="font-mono text-base text-accent-2-ink">
+                      {link.number}
+                    </span>{" "}
+                    {link.label}
                   </a>
                 </motion.li>
               ))}
+
               <motion.li variants={item} className="pt-4">
                 {RESUME_AVAILABLE ? (
                   <a
                     href={RESUME_HREF}
                     onClick={closeMenu}
-                    className="inline-block rounded-full bg-tangerine px-6 py-3 text-lg font-medium text-bg transition-opacity hover:opacity-90"
+                    className="inline-block rounded-chip bg-text px-6 py-3 font-body text-base font-medium text-bg"
                   >
                     Résumé
                   </a>
@@ -188,7 +203,7 @@ export default function Nav() {
                   <span
                     aria-disabled="true"
                     title="Coming soon"
-                    className="inline-block cursor-not-allowed rounded-full bg-tangerine px-6 py-3 text-lg font-medium text-bg opacity-40"
+                    className="inline-block cursor-not-allowed rounded-chip bg-text/45 px-6 py-3 font-body text-base font-medium text-bg"
                   >
                     Résumé
                   </span>

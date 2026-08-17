@@ -2,7 +2,25 @@
 
 import { useEffect, useRef } from "react";
 
-const GOO_FILTER_ID = "hero-goo-filter";
+/**
+ * The page's gradient field.
+ *
+ * This is the hero's original goo-blended blob background, promoted to
+ * cover the whole site. It is fixed, so it costs one composited layer
+ * no matter how long the page gets, and every frosted pane on the site
+ * refracts it. Without colour down here the glass has nothing to
+ * scatter and reads as a plain white box.
+ *
+ * Weighting is deliberately warm. Tangerine and blue at equal strength
+ * blend through hard-light into lavender, which is both off-palette
+ * and the single most generic background on the web, so blue appears
+ * once, as the cursor-tracked blob.
+ *
+ * Pointer position is written straight to the node's transform inside
+ * a rAF loop. No React state, so nothing re-renders per frame.
+ */
+
+const GOO_FILTER_ID = "atmosphere-goo";
 
 const GRAIN_SVG =
   "<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'>" +
@@ -13,17 +31,15 @@ const GRAIN_DATA_URI = `url("data:image/svg+xml,${encodeURIComponent(GRAIN_SVG)}
 
 const LERP_FACTOR = 20;
 
-export default function GradientBackground() {
+export default function Atmosphere() {
   const interactiveRef = useRef<HTMLDivElement>(null);
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (prefersReducedMotion) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const node = interactiveRef.current;
     if (!node) return;
@@ -31,7 +47,7 @@ export default function GradientBackground() {
     target.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     current.current = { ...target.current };
 
-    const handleMouseMove = (event: MouseEvent) => {
+    const handlePointerMove = (event: PointerEvent) => {
       target.current.x = event.clientX;
       target.current.y = event.clientY;
     };
@@ -39,17 +55,17 @@ export default function GradientBackground() {
     const tick = () => {
       current.current.x += (target.current.x - current.current.x) / LERP_FACTOR;
       current.current.y += (target.current.y - current.current.y) / LERP_FACTOR;
-      node.style.transform = `translate(${current.current.x - node.offsetWidth / 2}px, ${
-        current.current.y - node.offsetHeight / 2
-      }px)`;
+      node.style.transform = `translate3d(${
+        current.current.x - node.offsetWidth / 2
+      }px, ${current.current.y - node.offsetHeight / 2}px, 0)`;
       frameRef.current = requestAnimationFrame(tick);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
     frameRef.current = requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("pointermove", handlePointerMove);
       if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
     };
   }, []);
@@ -57,8 +73,8 @@ export default function GradientBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-      style={{ background: "linear-gradient(40deg, #FFF3EA, #FAFAF7)" }}
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      style={{ background: "linear-gradient(40deg, #FFF3EA, #FAFAF7 62%, #F4F2EC)" }}
     >
       <svg className="absolute h-0 w-0">
         <defs>
@@ -75,61 +91,21 @@ export default function GradientBackground() {
         </defs>
       </svg>
 
-      <div className="absolute inset-0" style={{ filter: `url(#${GOO_FILTER_ID}) blur(40px)` }}>
+      <div
+        className="absolute inset-0"
+        style={{ filter: `url(#${GOO_FILTER_ID}) blur(40px)` }}
+      >
         <div
           className="gradient-blob"
           style={
             {
-              "--blob-color": "var(--color-tangerine)",
+              "--blob-color": "var(--color-accent)",
               width: "80%",
               height: "80%",
               top: "10%",
               left: "10%",
               transformOrigin: "center center",
-              animation: "moveVertical 12s ease infinite",
-            } as React.CSSProperties
-          }
-        />
-        <div
-          className="gradient-blob"
-          style={
-            {
-              "--blob-color": "var(--color-blue)",
-              width: "80%",
-              height: "80%",
-              top: "calc(50% - 40%)",
-              left: "calc(50% - 40%)",
-              transformOrigin: "calc(50% - 400px)",
-              animation: "moveInCircle 8s reverse infinite",
-            } as React.CSSProperties
-          }
-        />
-        <div
-          className="gradient-blob"
-          style={
-            {
-              "--blob-color": "var(--color-tangerine)",
-              width: "80%",
-              height: "80%",
-              top: "calc(50% - 40%)",
-              left: "calc(50% - 40% + 200px)",
-              transformOrigin: "calc(50% + 400px)",
-              animation: "moveInCircle 16s linear infinite",
-            } as React.CSSProperties
-          }
-        />
-        <div
-          className="gradient-blob"
-          style={
-            {
-              "--blob-color": "var(--color-blue)",
-              width: "80%",
-              height: "80%",
-              top: "calc(50% - 20%)",
-              left: "calc(50% - 40%)",
-              opacity: 0.7,
-              transformOrigin: "calc(50% - 200px)",
-              animation: "moveHorizontal 16s ease infinite",
+              animation: "moveVertical 14s ease infinite",
             } as React.CSSProperties
           }
         />
@@ -138,26 +114,73 @@ export default function GradientBackground() {
           style={
             {
               "--blob-color": "#FFA05A",
+              width: "80%",
+              height: "80%",
+              top: "calc(50% - 40%)",
+              left: "calc(50% - 40%)",
+              transformOrigin: "calc(50% - 400px)",
+              animation: "moveInCircle 20s reverse infinite",
+            } as React.CSSProperties
+          }
+        />
+        <div
+          className="gradient-blob"
+          style={
+            {
+              "--blob-color": "var(--color-accent)",
+              width: "80%",
+              height: "80%",
+              top: "calc(50% - 40%)",
+              left: "calc(50% - 40% + 200px)",
+              opacity: 0.75,
+              transformOrigin: "calc(50% + 400px)",
+              animation: "moveInCircle 18s linear infinite",
+            } as React.CSSProperties
+          }
+        />
+        <div
+          className="gradient-blob"
+          style={
+            {
+              "--blob-color": "#FFC38A",
+              width: "80%",
+              height: "80%",
+              top: "calc(50% - 20%)",
+              left: "calc(50% - 40%)",
+              opacity: 0.7,
+              transformOrigin: "calc(50% - 200px)",
+              animation: "moveHorizontal 18s ease infinite",
+            } as React.CSSProperties
+          }
+        />
+        <div
+          className="gradient-blob"
+          style={
+            {
+              "--blob-color": "#FF8A4C",
               width: "60%",
               height: "60%",
               top: "calc(50% - 30%)",
               left: "calc(50% - 30%)",
               transformOrigin: "calc(50% - 800px) calc(50% + 200px)",
-              animation: "moveInCircle 8s ease infinite",
+              animation: "moveInCircle 10s ease infinite",
             } as React.CSSProperties
           }
         />
+
+        {/* The one blue blob, tied to the cursor so the secondary accent
+            appears as a response to the visitor rather than as wash. */}
         <div
           ref={interactiveRef}
           className="gradient-blob"
           style={
             {
-              "--blob-color": "var(--color-blue)",
-              width: "40%",
-              height: "40%",
+              "--blob-color": "var(--color-accent-2)",
+              width: "36%",
+              height: "36%",
               top: 0,
               left: 0,
-              opacity: 0.6,
+              opacity: 0.55,
             } as React.CSSProperties
           }
         />

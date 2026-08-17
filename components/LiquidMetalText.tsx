@@ -7,8 +7,11 @@ interface LiquidMetalTextProps {
   className?: string;
 }
 
+/* Ink wordmark with an accent sheen sweeping through it. The chrome
+   version read as a different brand from the rest of the page; this
+   keeps the same liquid displacement on the site's own two accents. */
 const METAL_GRADIENT =
-  "linear-gradient(135deg, #ffffff 0%, #e4e7ec 15%, #9aa0ab 30%, #4b5563 50%, #9aa0ab 70%, #f0f2f5 85%, #ffffff 100%)";
+  "linear-gradient(120deg, #141414 0%, #141414 32%, #FF6B35 44%, #3D5AFE 54%, #141414 66%, #141414 100%)";
 
 export default function LiquidMetalText({ text, className = "" }: LiquidMetalTextProps) {
   const rawId = useId();

@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
+/* ============================================================
+   TOKENS
+   One palette, one accent pair, one radius system, page locked
+   to light mode (the brief specifies a single light palette).
+   ============================================================ */
+
 @theme {
-  --color-bg: #FAFAF7;
-  --color-surface: #F0EFE9;
+  /* Surfaces */
+  --color-bg: #fafaf7;
+  --color-surface: #f0efe9;
+
+  /* Ink */
   --color-text: #141414;
-  --color-muted: #6B6B65;
-  --color-tangerine: #FF6B35;
-  --color-blue: #3D5AFE;
-  --color-purple: #8B5CF6;
-  --color-border: #E4E2D8;
+  --color-muted: #6b6b65;
 
-  --font-display: var(--font-display);
+  /* Accents. `accent` is the primary tangerine, `accent-2` the blue.
+     `-ink` variants are the AA-safe versions for text on light
+     surfaces; the raw hexes are for fills, glows and display type. */
+  --color-accent: #ff6b35;
+  --color-accent-ink: #a83a0c;
+  --color-accent-2: #3d5afe;
+  --color-accent-2-ink: #2b3fbe;
+
+  /* Hairlines. Glass carries its own edge, so these stay whisper thin. */
+  --color-border: rgba(20, 20, 20, 0.09);
+  --color-border-strong: rgba(20, 20, 20, 0.16);
+
+  --font-display: var(--font-heading);
   --font-body: var(--font-body);
-  --font-mono: var(--font-mono);
+  --font-mono: var(--font-mono-stack);
 
-  --animate-metal-sheen: metal-sheen 4s linear infinite;
-}
+  /* SHAPE CONSISTENCY LOCK
+     panel = cards, glass surfaces, media frames
+     inner = anything nested inside a panel
+     chip  = buttons, tags, pills (fully round)
+     There are no other radii on this page. */
+  --radius-panel: 24px;
+  --radius-inner: 14px;
+  --radius-chip: 999px;
 
-body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-body);
+  --animate-metal-sheen: metal-sheen 7s linear infinite;
 }
 
 @keyframes metal-sheen {
@@ -31,6 +51,66 @@ body {
     background-position: 250% 0%;
   }
 }
+
+:root {
+  color-scheme: light;
+
+  /* Frosted-glass recipe, defined once so every surface on the page is
+     the same material. This is a web glassmorphism approximation
+     (backdrop-filter + layered fill + grain + refraction edge), not an
+     Apple platform API.
+
+     The fill is deliberately LOW opacity. Frost only reads as frost if
+     the colour behind it survives the blur; a 70%-white panel is just
+     a white box. The page atmosphere supplies that colour. */
+  --glass-fill: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.52) 0%,
+    rgba(255, 255, 255, 0.2) 52%,
+    rgba(255, 255, 255, 0.34) 100%
+  );
+
+  --glass-blur: blur(30px) saturate(190%) brightness(1.05);
+
+  /* Grain baked into the pane. This is what separates "frosted" from
+     "blurred": real frost scatters light unevenly. */
+  --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+
+  /* Shadows tinted to the warm page hue, never neutral black. */
+  --glass-shadow: 0 2px 6px -2px rgba(60, 34, 18, 0.08),
+    0 28px 64px -30px rgba(60, 34, 18, 0.4);
+
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(60, 34, 18, 0.07);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  color: var(--color-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-2);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   PAGE ATMOSPHERE
+   The goo-blended gradient field, now fixed behind the whole page
+   rather than the hero alone. Everything glass on this site
+   refracts this layer, so it is load-bearing, not decoration.
+   ============================================================ */
 
 @keyframes moveVertical {
   0% {
@@ -68,177 +148,319 @@ body {
   }
 }
 
-@keyframes sparkleTwinkle {
-  0%,
-  100% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.3;
-    transform: scale(0.85);
-  }
-}
-
 .gradient-blob {
   position: absolute;
   border-radius: 9999px;
-  background: radial-gradient(circle at center, var(--blob-color) 0%, rgba(255, 255, 255, 0) 60%);
+  background: radial-gradient(
+    circle at center,
+    var(--blob-color) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
   mix-blend-mode: hard-light;
 }
 
-.sparkle-accent {
-  animation: sparkleTwinkle 3s ease infinite;
-  transform-origin: center;
-}
+/* ============================================================
+   GLASS
+   ============================================================ */
 
-@media (prefers-reduced-motion: reduce) {
-  .gradient-blob {
-    animation: none !important;
-  }
-
-  .sparkle-accent {
-    animation: none !important;
-    opacity: 0.6 !important;
-  }
-}
-
-/* --- Work section --- */
-
-@keyframes workDriftA {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(4%, -6%) scale(1.06);
-  }
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-}
-
-@keyframes workDriftB {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-5%, 5%) scale(0.95);
-  }
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-}
-
-.work-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(100px);
-  width: var(--blob-size);
-  height: var(--blob-size);
-  opacity: var(--blob-opacity);
-}
-
-@media (max-width: 899px) {
-  .work-blob {
-    width: calc(var(--blob-size) * 0.65);
-    height: calc(var(--blob-size) * 0.65);
-    opacity: calc(var(--blob-opacity) * 0.55);
-    filter: blur(70px);
-  }
-}
-
-@keyframes workPing {
-  75%,
-  100% {
-    transform: scale(3.2);
-    opacity: 0;
-  }
-}
-
-.work-ping {
-  animation: workPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-/* Card spotlight + masked-border glow, driven by --mx/--my/--accent set via ref mutation */
-.work-card {
+.glass {
   position: relative;
+  isolation: isolate;
+  border-radius: var(--radius-panel);
+  background-image: var(--glass-grain), var(--glass-fill);
+  background-size: 200px 200px, cover;
+  background-repeat: repeat, no-repeat;
+  background-blend-mode: soft-light, normal;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-inset), var(--glass-shadow);
 }
 
-.work-card::before,
-.work-card::after {
+/* Refraction edge. A 1px gradient border, bright where light catches
+   the top-left and picking up the accents as it wraps away. This is
+   the detail that reads as "expensive" rather than "div with blur". */
+.glass::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-
-.work-card::before {
-  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), var(--accent, transparent) 0%, transparent 70%);
-  opacity: 0;
-}
-
-.work-card::after {
   padding: 1px;
-  background: radial-gradient(160px circle at var(--mx, 50%) var(--my, 50%), var(--accent, transparent) 0%, transparent 70%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 0.34) 34%,
+    rgba(255, 107, 53, 0.34) 72%,
+    rgba(61, 90, 254, 0.28) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
+  pointer-events: none;
+  z-index: 3;
 }
 
-.work-card:hover::before {
-  opacity: 0.16;
+/* Quieter pane for large background panels that should recede. */
+.glass-quiet {
+  --glass-fill: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.36) 0%,
+    rgba(255, 255, 255, 0.12) 100%
+  );
+  --glass-shadow: 0 18px 44px -30px rgba(60, 34, 18, 0.3);
 }
 
-.work-card:hover::after {
-  opacity: 1;
-}
-
-/* Photo hover pop — real-hover devices only; touch gets a much smaller pop */
-.work-photo {
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
-}
-
-@media (hover: hover) {
-  .work-photo-left:hover,
-  .work-photo-right:hover {
-    transform: scale(1.34);
-    z-index: 10;
-    box-shadow: 0 24px 48px -12px color-mix(in srgb, var(--accent, #3D5AFE) 55%, transparent);
-  }
-}
-
-@media (hover: none) {
-  .work-photo-left:active,
-  .work-photo-right:active {
-    transform: scale(1.04);
-  }
-}
-
-.work-scanline {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(20, 20, 26, 0.06) 0px,
-    rgba(20, 20, 26, 0.06) 1px,
-    transparent 1px,
-    transparent 3px
+.glass-quiet::after {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.18) 46%,
+    rgba(60, 34, 18, 0.1) 100%
   );
 }
 
+/* Heavier pane for the hero, where the gradient behind is strongest
+   and the copy needs a legible ground. */
+.glass-deep {
+  --glass-fill: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.46) 100%
+  );
+  --glass-blur: blur(44px) saturate(200%) brightness(1.06);
+  --glass-shadow: 0 3px 8px -3px rgba(60, 34, 18, 0.1),
+    0 40px 90px -40px rgba(60, 34, 18, 0.45);
+}
+
+.glass-lift {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .glass-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--glass-inset), 0 2px 6px -2px rgba(60, 34, 18, 0.1),
+      0 44px 88px -34px rgba(60, 34, 18, 0.46);
+  }
+}
+
+.glass-lift:active {
+  transform: translateY(-1px) scale(0.995);
+}
+
+/* Cursor spotlight. --mx/--my are written straight to the node's style
+   by a rAF loop, never through React state. */
+.glass-spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    300px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--spot, #ff6b35) 20%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (hover: hover) {
+  .glass-spot:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Opaque fallback when the OS asks for reduced transparency. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-quiet,
+  .glass-deep {
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ============================================================
+   CHIPS
+   ============================================================ */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--radius-chip);
+  padding: 0.3rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+  color: var(--color-accent-ink);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--color-accent) 24%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+
+.chip-blue {
+  color: var(--color-accent-2-ink);
+  background: color-mix(in srgb, var(--color-accent-2) 9%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--color-accent-2) 24%, transparent);
+}
+
+.chip-neutral {
+  color: var(--color-muted);
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+}
+
+/* Chips sitting on the dark contact block. */
+.chip-invert {
+  color: rgba(250, 250, 247, 0.82);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+/* Primary CTA. The sheen is a one-shot on hover, not a perpetual
+   loop, so it reads as a response to the user rather than noise. */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--radius-chip);
+  background: var(--color-text);
+  color: var(--color-bg);
+  box-shadow: 0 2px 4px -2px rgba(60, 34, 18, 0.3),
+    0 16px 32px -16px rgba(20, 20, 20, 0.6);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    110deg,
+    transparent 28%,
+    rgba(255, 255, 255, 0.24) 48%,
+    transparent 68%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: -1;
+}
+
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px -2px rgba(60, 34, 18, 0.34),
+      0 22px 44px -18px rgba(20, 20, 20, 0.66);
+  }
+
+  .btn-primary:hover::before {
+    transform: translateX(120%);
+  }
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/* Secondary CTA. A frosted pane rather than an outline, so the two
+   buttons read as the same material family. */
+.btn-ghost {
+  border-radius: var(--radius-chip);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .btn-ghost:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.btn-ghost:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/* ============================================================
+   MOTION
+   ============================================================ */
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes availabilityPing {
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.availability-ping {
+  animation: availabilityPing 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.rule-draw {
+  transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.practice-cell:hover .rule-draw,
+.practice-cell:focus-within .rule-draw {
+  width: 100%;
+}
+
+.media-frame:hover .expand-hint,
+.media-frame:focus-visible .expand-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .work-blob {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .gradient-blob,
+  .availability-ping {
     animation: none !important;
   }
 
-  .work-ping {
-    animation: none !important;
+  .availability-ping {
     opacity: 0 !important;
   }
 
-  .work-photo {
+  .glass-lift,
+  .rule-draw,
+  .btn-primary,
+  .btn-primary::before,
+  .btn-ghost {
     transition: none !important;
   }
 }

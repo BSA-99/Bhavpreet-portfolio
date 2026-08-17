@@ -1,27 +1,33 @@
+import Atmosphere from "@/components/Atmosphere";
 import Nav from "@/components/Nav";
 import SmoothScroll from "@/components/SmoothScroll";
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-display",
+const archivoHeading = Archivo({
+  variable: "--font-heading",
+  weight: ["600", "700", "800"],
   subsets: ["latin"],
 });
 
-const inter = Inter({
+const archivoBody = Archivo({
   variable: "--font-body",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 
+/* Mono carries metrics, stack tags and small labels. It is what gives
+   the page its technical register without shouting. */
 const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
+  variable: "--font-mono-stack",
+  weight: ["400", "500"],
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "Bhavpreet Singh Arneja",
-  description: "Cloud & AI infrastructure — portfolio",
+  description: "Cloud and AI infrastructure. Portfolio.",
 };
 
 export default function RootLayout({
@@ -31,7 +37,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body
+        className={`${archivoHeading.variable} ${archivoBody.variable} ${jetbrainsMono.variable} antialiased`}
+      >
+        <Atmosphere />
         <SmoothScroll />
         <Nav />
         {children}

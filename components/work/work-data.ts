@@ -6,7 +6,7 @@ export interface WorkEntry {
   location: string;
   dates: string;
   current?: boolean;
-  accent: "blue" | "orange" | "purple";
+  accent: "blue" | "orange";
   stack: string[];
   bullets: { text: string; bold?: string[] }[];
   metrics: { value: string; label: string }[];
@@ -23,7 +23,7 @@ export const workEntries: WorkEntry[] = [
     role: "Cloud Centre of Excellence Co-op",
     company: "Sobeys Inc.",
     location: "Stellarton, NS",
-    dates: "May 2026 — Present",
+    dates: "May 2026 - Present",
     current: true,
     accent: "blue",
     stack: ["Azure Resource Graph", "KQL", "PowerShell", "Azure Policy", "RBAC"],
@@ -47,8 +47,8 @@ export const workEntries: WorkEntry[] = [
       { value: "6", label: "Subscriptions covered" },
     ],
     photos: [
-      { src: "/images/placeholder-work-1.jpg", alt: "Placeholder photo — swap in later", caption: "Governance tooling" },
-      { src: "/images/placeholder-work-2.jpg", alt: "Placeholder photo — swap in later", caption: "Team retirement sync" },
+      { src: "/images/placeholder-work-1.jpg", alt: "Placeholder, swap in later", caption: "Governance tooling" },
+      { src: "/images/placeholder-work-2.jpg", alt: "Placeholder, swap in later", caption: "Team retirement sync" },
     ],
   },
   {
@@ -57,7 +57,7 @@ export const workEntries: WorkEntry[] = [
     role: "IT Ops Transformation Student",
     company: "Sobeys Inc.",
     location: "Stellarton, NS",
-    dates: "Sept 2025 — Dec 2025",
+    dates: "Sept 2025 - Dec 2025",
     accent: "orange",
     stack: ["PowerShell", "ServiceNow", "Azure Automation", "Process Mapping"],
     bullets: [
@@ -80,8 +80,8 @@ export const workEntries: WorkEntry[] = [
       { value: "3", label: "Workflows redesigned" },
     ],
     photos: [
-      { src: "/images/placeholder-work-3.jpg", alt: "Placeholder photo — swap in later", caption: "Runbook automation" },
-      { src: "/images/placeholder-work-4.jpg", alt: "Placeholder photo — swap in later", caption: "Workflow mapping" },
+      { src: "/images/placeholder-work-3.jpg", alt: "Placeholder, swap in later", caption: "Runbook automation" },
+      { src: "/images/placeholder-work-4.jpg", alt: "Placeholder, swap in later", caption: "Workflow mapping" },
     ],
   },
   {
@@ -90,8 +90,8 @@ export const workEntries: WorkEntry[] = [
     role: "Cloud Centre of Excellence Summer Student",
     company: "Sobeys Inc.",
     location: "Stellarton, NS",
-    dates: "May 2025 — Aug 2025",
-    accent: "purple",
+    dates: "May 2025 - Aug 2025",
+    accent: "blue",
     stack: ["Azure Governance", "Cost Management", "KQL", "Documentation"],
     bullets: [
       {
@@ -113,8 +113,8 @@ export const workEntries: WorkEntry[] = [
       { value: "1", label: "Onboarding guide shipped" },
     ],
     photos: [
-      { src: "/images/placeholder-work-5.jpg", alt: "Placeholder photo — swap in later", caption: "Governance baselining" },
-      { src: "/images/placeholder-work-6.jpg", alt: "Placeholder photo — swap in later", caption: "Onboarding docs" },
+      { src: "/images/placeholder-work-5.jpg", alt: "Placeholder, swap in later", caption: "Governance baselining" },
+      { src: "/images/placeholder-work-6.jpg", alt: "Placeholder, swap in later", caption: "Onboarding docs" },
     ],
   },
 ];
