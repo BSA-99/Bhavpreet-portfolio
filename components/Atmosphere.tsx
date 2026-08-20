@@ -11,13 +11,17 @@ import { useEffect, useRef } from "react";
  * refracts it. Without colour down here the glass has nothing to
  * scatter and reads as a plain white box.
  *
- * Weighting is deliberately warm. Tangerine and blue at equal strength
- * blend through hard-light into lavender, which is both off-palette
- * and the single most generic background on the web, so blue appears
- * once, as the cursor-tracked blob.
+ * Weighting is cool-neutral: slate and steel do the ambient work, and
+ * tangerine appears once, small, as a brand note rather than as the
+ * page temperature. Tangerine and blue at equal strength blend through
+ * hard-light into lavender, which is both off-palette and the single
+ * most generic background on the web, so they are kept apart in space.
  *
- * Pointer position is written straight to the node's transform inside
- * a rAF loop. No React state, so nothing re-renders per frame.
+ * The field is decoration and does not respond to the pointer. It used
+ * to: a blue blob chased the cursor, which — alongside the magnetic
+ * buttons, the card spotlight and the contact cross-hatch — made four
+ * separate things answer the same mouse. The page now answers it in
+ * one place, on the element the pointer is actually over.
  */
 
 const GOO_FILTER_ID = "atmosphere-goo";
@@ -29,52 +33,36 @@ const GRAIN_SVG =
 
 const GRAIN_DATA_URI = `url("data:image/svg+xml,${encodeURIComponent(GRAIN_SVG)}")`;
 
-const LERP_FACTOR = 20;
-
 export default function Atmosphere() {
-  const interactiveRef = useRef<HTMLDivElement>(null);
-  const target = useRef({ x: 0, y: 0 });
-  const current = useRef({ x: 0, y: 0 });
-  const frameRef = useRef<number | null>(null);
+  const fieldRef = useRef<HTMLDivElement>(null);
 
+  /* A backgrounded tab still runs CSS animations in some engines, and
+     each blob transform reruns the goo filter over the whole viewport.
+     Nothing is visible to pause against, so pause it. */
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (window.matchMedia("(pointer: coarse)").matches) return;
+    const field = fieldRef.current;
+    if (!field) return;
 
-    const node = interactiveRef.current;
-    if (!node) return;
-
-    target.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    current.current = { ...target.current };
-
-    const handlePointerMove = (event: PointerEvent) => {
-      target.current.x = event.clientX;
-      target.current.y = event.clientY;
+    const sync = () => {
+      field.style.animationPlayState = document.hidden ? "paused" : "running";
+      for (const blob of Array.from(field.children)) {
+        (blob as HTMLElement).style.animationPlayState = document.hidden
+          ? "paused"
+          : "running";
+      }
     };
 
-    const tick = () => {
-      current.current.x += (target.current.x - current.current.x) / LERP_FACTOR;
-      current.current.y += (target.current.y - current.current.y) / LERP_FACTOR;
-      node.style.transform = `translate3d(${
-        current.current.x - node.offsetWidth / 2
-      }px, ${current.current.y - node.offsetHeight / 2}px, 0)`;
-      frameRef.current = requestAnimationFrame(tick);
-    };
-
-    window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    frameRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
-    };
+    document.addEventListener("visibilitychange", sync);
+    return () => document.removeEventListener("visibilitychange", sync);
   }, []);
 
   return (
     <div
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-      style={{ background: "linear-gradient(40deg, #FFF3EA, #FAFAF7 62%, #F4F2EC)" }}
+      style={{
+        background: "linear-gradient(40deg, #FFFFFF, #FFFFFF 46%, #EEF2F7)",
+      }}
     >
       <svg className="absolute h-0 w-0">
         <defs>
@@ -92,14 +80,17 @@ export default function Atmosphere() {
       </svg>
 
       <div
+        ref={fieldRef}
         className="absolute inset-0"
         style={{ filter: `url(#${GOO_FILTER_ID}) blur(40px)` }}
       >
+        {/* Slate. The largest mass, and the one that sets the page's
+            cool-neutral temperature. */}
         <div
           className="gradient-blob"
           style={
             {
-              "--blob-color": "var(--color-accent)",
+              "--blob-color": "#A9BDD6",
               width: "80%",
               height: "80%",
               top: "10%",
@@ -109,11 +100,12 @@ export default function Atmosphere() {
             } as React.CSSProperties
           }
         />
+        {/* Steel, deeper, to keep the field from flattening into grey. */}
         <div
           className="gradient-blob"
           style={
             {
-              "--blob-color": "#FFA05A",
+              "--blob-color": "#8CA6C6",
               width: "80%",
               height: "80%",
               top: "calc(50% - 40%)",
@@ -123,16 +115,17 @@ export default function Atmosphere() {
             } as React.CSSProperties
           }
         />
+        {/* Cool mist, softening the transitions between the two above. */}
         <div
           className="gradient-blob"
           style={
             {
-              "--blob-color": "var(--color-accent)",
+              "--blob-color": "#CFDAE6",
               width: "80%",
               height: "80%",
               top: "calc(50% - 40%)",
               left: "calc(50% - 40% + 200px)",
-              opacity: 0.75,
+              opacity: 0.8,
               transformOrigin: "calc(50% + 400px)",
               animation: "moveInCircle 18s linear infinite",
             } as React.CSSProperties
@@ -142,7 +135,7 @@ export default function Atmosphere() {
           className="gradient-blob"
           style={
             {
-              "--blob-color": "#FFC38A",
+              "--blob-color": "#B8C9DC",
               width: "80%",
               height: "80%",
               top: "calc(50% - 20%)",
@@ -153,33 +146,38 @@ export default function Atmosphere() {
             } as React.CSSProperties
           }
         />
+        {/* The single tangerine, small and kept to one orbit so the
+            brand colour reads as a note rather than a wash. */}
         <div
           className="gradient-blob"
           style={
             {
-              "--blob-color": "#FF8A4C",
-              width: "60%",
-              height: "60%",
-              top: "calc(50% - 30%)",
-              left: "calc(50% - 30%)",
+              "--blob-color": "var(--color-accent)",
+              width: "46%",
+              height: "46%",
+              top: "calc(50% - 23%)",
+              left: "calc(50% - 23%)",
+              opacity: 0.5,
               transformOrigin: "calc(50% - 800px) calc(50% + 200px)",
-              animation: "moveInCircle 10s ease infinite",
+              animation: "moveInCircle 14s ease infinite",
             } as React.CSSProperties
           }
         />
 
-        {/* The one blue blob, tied to the cursor so the secondary accent
-            appears as a response to the visitor rather than as wash. */}
+        {/* The one blue blob. It used to chase the cursor; the page now
+            answers the pointer in exactly one place — the spotlight on
+            a project card, which is anchored to the thing it belongs
+            to. Anchored here at the centre, where the chase began, so
+            the field's composition is unchanged. */}
         <div
-          ref={interactiveRef}
           className="gradient-blob"
           style={
             {
               "--blob-color": "var(--color-accent-2)",
               width: "36%",
               height: "36%",
-              top: 0,
-              left: 0,
+              top: "calc(50% - 18%)",
+              left: "calc(50% - 18%)",
               opacity: 0.55,
             } as React.CSSProperties
           }

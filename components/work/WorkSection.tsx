@@ -59,15 +59,15 @@ export default function WorkSection() {
   return (
     <section
       id="work"
-      className="relative scroll-mt-24 px-6 py-28 sm:px-10 lg:px-14 lg:py-44"
+      className="relative scroll-mt-24 px-6 py-16 sm:px-10 lg:px-14 lg:py-24"
     >
       <div className="mx-auto max-w-[1200px]">
-        <header className="mb-16 max-w-[62ch] lg:mb-20">
-          <h2 className="mb-5 max-w-[24ch] font-display text-[26px] font-bold leading-[1.12] tracking-[-0.025em] sm:text-[34px] lg:text-[44px]">
+        <header className="mb-10 max-w-[62ch] lg:mb-12">
+          <h2 className="mb-5 max-w-[24ch] font-display text-title font-bold">
             Three terms building the guardrails that keep a cloud estate
             honest.
           </h2>
-          <p className="font-body text-[15px] leading-[1.7] text-muted sm:text-base">
+          <p className="font-body text-lead text-muted">
             Governance tooling, access reviews, and automation across three
             terms on Sobeys&apos; Cloud Centre of Excellence team. The
             unglamorous work that keeps production boring.
@@ -84,10 +84,10 @@ export default function WorkSection() {
                   : ""
               } ${i === 1 ? "border-b sm:border-b-0" : ""}`}
             >
-              <div className="mb-2 font-mono text-[10px] font-medium tracking-[0.16em] text-muted">
+              <div className="mb-2 font-body text-label font-medium text-muted">
                 {row.label}
               </div>
-              <div className="font-display text-[15px] font-bold sm:text-base">
+              <div className="font-display text-[0.9375rem] font-bold sm:text-base">
                 {row.value}
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function WorkSection() {
                   className="grid w-full cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-7 text-left transition-colors duration-300 hover:bg-white/25 sm:gap-6 sm:px-9 sm:py-9"
                 >
                   <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-inner font-mono text-[12px] font-medium transition-all duration-300 sm:h-12 sm:w-12 sm:text-[13px]"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-inner font-body text-[0.75rem] font-medium transition-all duration-300 sm:h-12 sm:w-12 sm:text-[0.8125rem]"
                     style={
                       open
                         ? { background: accent, color: "#FAFAF7" }
@@ -132,10 +132,10 @@ export default function WorkSection() {
                   </span>
 
                   <span className="min-w-0">
-                    <span className="block font-display text-[16px] font-bold leading-snug sm:text-xl lg:text-[22px]">
+                    <span className="block font-display text-heading font-bold">
                       {entry.role}
                     </span>
-                    <span className="mt-1 block font-body text-xs text-muted sm:text-[13px]">
+                    <span className="mt-1 block font-body text-xs text-muted sm:text-[0.8125rem]">
                       {entry.company}, {entry.location}
                     </span>
                   </span>
@@ -146,7 +146,7 @@ export default function WorkSection() {
                         Current
                       </span>
                     )}
-                    <span className="hidden font-mono text-[12px] tabular-nums text-muted md:inline">
+                    <span className="hidden font-body text-[0.75rem] tabular-nums text-muted md:inline">
                       {entry.dates}
                     </span>
                     <span
@@ -181,7 +181,7 @@ export default function WorkSection() {
                         {entry.bullets.map((bullet, i) => (
                           <li
                             key={i}
-                            className="grid grid-cols-[10px_1fr] gap-4 font-body text-[15px] leading-[1.65] text-muted"
+                            className="grid grid-cols-[10px_1fr] gap-4 font-body text-copy text-muted"
                           >
                             <span
                               aria-hidden="true"
@@ -194,7 +194,14 @@ export default function WorkSection() {
                       </ul>
                     </div>
 
-                    <div className="glass glass-quiet grid grid-cols-3 self-start overflow-hidden sm:grid-cols-1">
+                    {/* Not a glass pane. This sits inside the glass
+                        list above it, and stacking one translucent
+                        surface on another blurs an already-blurred
+                        backdrop — the second pane adds haze, not
+                        depth, and the numbers are the one thing in
+                        this row that must stay crisp. A solid inset
+                        with a hairline reads as nested instead. */}
+                    <div className="grid grid-cols-3 self-start overflow-hidden rounded-panel bg-white/55 shadow-[inset_0_0_0_1px_var(--color-border)] sm:grid-cols-1">
                       {entry.metrics.map((metric, i) => (
                         <div
                           key={i}
@@ -205,12 +212,12 @@ export default function WorkSection() {
                           }`}
                         >
                           <div
-                            className="font-mono text-[22px] font-medium tracking-[-0.02em] sm:text-[26px]"
+                            className="font-body text-[1.375rem] font-medium tracking-[-0.02em] sm:text-[1.625rem]"
                             style={{ color: accentInk }}
                           >
                             {metric.value}
                           </div>
-                          <div className="mt-1 font-body text-[11px] leading-tight text-muted">
+                          <div className="mt-1 font-body text-[0.6875rem] leading-tight text-muted">
                             {metric.label}
                           </div>
                         </div>

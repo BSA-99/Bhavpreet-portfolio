@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { ENTER, revealDelay } from "@/lib/motion";
 
 type Category = {
   title: string;
@@ -66,14 +67,14 @@ export default function Practice() {
   return (
     <section
       id="skills"
-      className="relative scroll-mt-24 px-6 py-28 sm:px-10 lg:px-14 lg:py-44"
+      className="relative scroll-mt-24 px-6 py-16 sm:px-10 lg:px-14 lg:py-24"
     >
       <div className="mx-auto max-w-[1200px]">
-        <header className="mb-16 max-w-[62ch] lg:mb-20">
-          <h2 className="mb-5 max-w-[22ch] font-display text-[26px] font-bold leading-[1.12] tracking-[-0.025em] sm:text-[34px] lg:text-[44px]">
+        <header className="mb-10 max-w-[62ch] lg:mb-12">
+          <h2 className="mb-5 max-w-[22ch] font-display text-title font-bold">
             What I reach for, and what I reach for it to do.
           </h2>
-          <p className="font-body text-[15px] leading-[1.7] text-muted sm:text-base">
+          <p className="font-body text-lead text-muted">
             Four groups, ordered by how much of my week each one takes.
           </p>
         </header>
@@ -87,11 +88,7 @@ export default function Practice() {
                 initial={reduce ? false : { opacity: 0, y: 26 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{
-                  duration: 0.65,
-                  delay: (i % 2) * 0.08,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
+                transition={{ ...ENTER, delay: revealDelay(i % 2) }}
                 className={`practice-cell glass glass-lift overflow-hidden px-7 pb-10 pt-9 sm:px-10 sm:pb-12 sm:pt-11 ${category.span}`}
               >
                 {category.wash && (
@@ -110,11 +107,11 @@ export default function Practice() {
                     style={{ background: accent }}
                   />
 
-                  <h3 className="mb-2.5 font-display text-[18px] font-bold leading-snug sm:text-xl">
+                  <h3 className="mb-2.5 font-display text-heading font-bold">
                     {category.title}
                   </h3>
 
-                  <p className="mb-6 max-w-[38ch] font-body text-[14px] leading-[1.6] text-muted">
+                  <p className="mb-6 max-w-[38ch] font-body text-copy text-muted">
                     {category.blurb}
                   </p>
 

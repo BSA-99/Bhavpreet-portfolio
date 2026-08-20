@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Plus } from "lucide-react";
 import ProjectCard from "./ProjectCard";
+import { ENTER, revealDelay } from "@/lib/motion";
 
 const projects = [
   {
@@ -45,14 +46,14 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="relative scroll-mt-24 px-6 py-28 sm:px-10 lg:px-14 lg:py-44"
+      className="relative scroll-mt-24 px-6 py-16 sm:px-10 lg:px-14 lg:py-24"
     >
       <div className="mx-auto max-w-[1200px]">
-        <header className="mb-16 max-w-[62ch] lg:mb-20">
-          <h2 className="mb-5 max-w-[22ch] font-display text-[26px] font-bold leading-[1.12] tracking-[-0.025em] sm:text-[34px] lg:text-[44px]">
+        <header className="mb-10 max-w-[62ch] lg:mb-12">
+          <h2 className="mb-5 max-w-[22ch] font-display text-title font-bold">
             Things I built to find out whether they would work.
           </h2>
-          <p className="font-body text-[15px] leading-[1.7] text-muted sm:text-base">
+          <p className="font-body text-lead text-muted">
             Models trained, wrapped in an API, and shipped in a container. Each
             one runs somewhere other than a notebook.
           </p>
@@ -68,11 +69,7 @@ export default function Projects() {
               initial={reduce ? false : { opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{
-                duration: 0.7,
-                delay: i * 0.08,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+              transition={{ ...ENTER, delay: revealDelay(i) }}
               className={i === 0 ? "lg:col-span-7" : "lg:col-span-5"}
             >
               <ProjectCard
@@ -88,7 +85,7 @@ export default function Projects() {
             initial={reduce ? false : { opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ ...ENTER, delay: revealDelay(2) }}
             className="glass glass-quiet flex items-center gap-6 px-7 py-9 sm:px-10 lg:col-span-12"
           >
             <span
@@ -103,7 +100,7 @@ export default function Projects() {
             >
               <Plus size={17} strokeWidth={2} className="text-accent-ink" />
             </span>
-            <p className="relative z-[2] max-w-[46ch] font-body text-[14px] leading-[1.6] text-muted sm:text-[15px]">
+            <p className="relative z-[2] max-w-[46ch] font-body text-copy text-muted">
               More projects in progress. Up to five will land here as they
               ship.
             </p>

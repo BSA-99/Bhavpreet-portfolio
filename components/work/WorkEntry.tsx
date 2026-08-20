@@ -55,7 +55,7 @@ export default function WorkEntry({ entry }: WorkEntryProps) {
         {/* Meta column */}
         <div>
           <div className="flex items-center gap-3">
-            <span className="font-mono text-sm" style={{ color: accentColor }}>
+            <span className="font-body text-sm" style={{ color: accentColor }}>
               {entry.index}
             </span>
             <span className="h-px flex-1 bg-border" />
@@ -65,7 +65,7 @@ export default function WorkEntry({ entry }: WorkEntryProps) {
           <p className="mt-2 text-sm text-muted">
             {entry.company} · {entry.location}
           </p>
-          <p className="font-mono mt-1 text-xs text-muted">{entry.dates}</p>
+          <p className="font-body mt-1 text-xs text-muted">{entry.dates}</p>
 
           {entry.current && (
             <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-wide text-muted">

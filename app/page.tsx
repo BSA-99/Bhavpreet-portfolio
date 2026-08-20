@@ -7,13 +7,18 @@ import Contact from "@/components/Contact";
 
 export default function Home() {
   return (
-    <main>
-      <Hero />
-      <About />
-      <WorkSection />
-      <Projects />
-      <Practice />
+    <>
+      <main>
+        <Hero />
+        <About />
+        <WorkSection />
+        <Projects />
+        <Practice />
+      </main>
+
+      {/* Outside <main> on purpose: a <footer> is only the page's
+          contentinfo landmark when it is not nested inside another one. */}
       <Contact />
-    </main>
+    </>
   );
 }

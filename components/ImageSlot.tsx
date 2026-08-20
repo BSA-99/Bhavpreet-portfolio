@@ -27,7 +27,7 @@ export default function ImageSlot({ label, src, alt, className }: ImageSlotProps
       className={`relative flex items-center justify-center overflow-hidden p-6 text-center ${className ?? ""}`}
       style={{
         background:
-          "linear-gradient(140deg, color-mix(in srgb, var(--color-surface) 70%, transparent) 0%, color-mix(in srgb, var(--color-accent) 8%, transparent) 100%)",
+          "linear-gradient(140deg, color-mix(in srgb, var(--color-surface) 70%, transparent) 0%, color-mix(in srgb, var(--color-accent-2) 7%, transparent) 100%)",
       }}
     >
       <div
@@ -37,7 +37,7 @@ export default function ImageSlot({ label, src, alt, className }: ImageSlotProps
           border: "1px dashed color-mix(in srgb, var(--color-text) 16%, transparent)",
         }}
       />
-      <span className="relative font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+      <span className="relative font-body text-label uppercase text-muted">
         {label}
       </span>
     </div>

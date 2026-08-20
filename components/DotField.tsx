@@ -2,23 +2,62 @@
 
 import { useEffect, useRef } from "react";
 
+type Tone = "ink" | "light";
+
 interface DotFieldProps {
   className?: string;
+  /**
+   * Which ground the field is drawn on. `ink` paints white crosses for
+   * a dark surface; `light` paints ink crosses, quieter, for a frosted
+   * pane on the white page. The canvas is transparent either way — the
+   * surface underneath supplies the colour.
+   */
+  tone?: Tone;
 }
 
+/* Stroke and bloom per ground. The light pane needs far less of both:
+   the same alphas that read as texture on ink read as dirt on white. */
+const TONES: Record<Tone, {
+  stroke: string;
+  base: number;
+  gain: number;
+  bloom: [string, string];
+}> = {
+  ink: {
+    stroke: "255,255,255",
+    base: 0.1,
+    gain: 0.42,
+    bloom: ["rgba(140,166,198,0.26)", "rgba(140,166,198,0)"],
+  },
+  light: {
+    stroke: "16,17,20",
+    base: 0.07,
+    gain: 0.13,
+    bloom: ["rgba(61,90,254,0.10)", "rgba(61,90,254,0)"],
+  },
+};
+
 /**
- * Interactive cross-hatch field for the contact block.
+ * Interactive cross-hatch field for the footer.
  *
- * Draws ink-toned crosses over a transparent canvas. The section's own
- * gradient supplies the colour, so this only adds texture and the
- * cursor push, which is the section's one piece of feedback motion.
+ * Draws crosses over a transparent canvas in whichever tone the ground
+ * asks for, so this only adds texture and the cursor push, which is the
+ * footer's one piece of feedback motion.
  *
  * Pointer state lives in refs; the component never re-renders.
+ *
+ * The loop is demand-driven, not perpetual. It runs only while the
+ * canvas is on screen AND the field is still settling toward the
+ * pointer; once the lerp converges it paints one last frame and stops.
+ * A cross-hatch that has finished moving is a static image, and
+ * re-rasterising a static image every 16ms is work with no output.
  */
-export default function DotField({ className }: DotFieldProps) {
+export default function DotField({ className, tone = "ink" }: DotFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
+    const paint = TONES[tone];
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -43,7 +82,13 @@ export default function DotField({ className }: DotFieldProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
-    const ro = new ResizeObserver(resize);
+
+    /* Resizing the backing store clears it, and with a demand-driven
+       loop there is no next frame to repaint it — so ask for one. */
+    const ro = new ResizeObserver(() => {
+      resize();
+      repaint();
+    });
     ro.observe(canvas);
 
     const move = (e: PointerEvent) => {
@@ -55,10 +100,19 @@ export default function DotField({ className }: DotFieldProps) {
     };
 
     let raf: number | null = null;
+    let onScreen = false;
+
+    /* Below this the cross-hatch is no longer visibly moving, so the
+       next frame would be a pixel-identical repaint. */
+    const SETTLE_EPSILON = 0.05;
 
     const draw = () => {
-      mouse.x += (mouse.tx - mouse.x) * 0.12;
-      mouse.y += (mouse.ty - mouse.y) * 0.12;
+      /* Named apart from the per-cross dx/dy below, which shadow these
+         inside the grid loop. */
+      const settleX = mouse.tx - mouse.x;
+      const settleY = mouse.ty - mouse.y;
+      mouse.x += settleX * 0.12;
+      mouse.y += settleY * 0.12;
 
       ctx.clearRect(0, 0, w, h);
 
@@ -73,8 +127,8 @@ export default function DotField({ className }: DotFieldProps) {
           mouse.y,
           reach * 1.6
         );
-        bloom.addColorStop(0, "rgba(255,138,76,0.20)");
-        bloom.addColorStop(1, "rgba(255,255,255,0)");
+        bloom.addColorStop(0, paint.bloom[0]);
+        bloom.addColorStop(1, paint.bloom[1]);
         ctx.fillStyle = bloom;
         ctx.fillRect(0, 0, w, h);
       }
@@ -90,7 +144,7 @@ export default function DotField({ className }: DotFieldProps) {
           const nx = d > 0.01 ? x + (dx / d) * push : x;
           const ny = d > 0.01 ? y + (dy / d) * push : y;
           const arm = 2.4 + t * 4;
-          ctx.strokeStyle = `rgba(250,250,247,${0.1 + t * 0.42})`;
+          ctx.strokeStyle = `rgba(${paint.stroke},${paint.base + t * paint.gain})`;
           ctx.lineWidth = 1 + t * 0.9;
           ctx.beginPath();
           ctx.moveTo(nx - arm, ny);
@@ -101,25 +155,73 @@ export default function DotField({ className }: DotFieldProps) {
         }
       }
 
+      /* Settled and nothing pulling it — stop until the pointer moves
+         again. This frame already shows the resting state. */
+      if (
+        Math.abs(settleX) < SETTLE_EPSILON &&
+        Math.abs(settleY) < SETTLE_EPSILON
+      ) {
+        raf = null;
+        return;
+      }
+
       raf = requestAnimationFrame(draw);
     };
 
-    if (reduced) {
-      // Static grid, no loop.
-      draw();
+    /* Idempotent: a burst of pointermove events schedules one frame. */
+    const wake = () => {
+      if (raf === null && onScreen) raf = requestAnimationFrame(draw);
+    };
+
+    /* Unconditional single frame, for repaints the gating shouldn't
+       suppress (resize). */
+    const repaint = () => {
+      if (raf === null) raf = requestAnimationFrame(draw);
+    };
+
+    const sleep = () => {
       if (raf !== null) cancelAnimationFrame(raf);
       raf = null;
-    } else {
-      window.addEventListener("pointermove", move, { passive: true });
+    };
+
+    if (reduced) {
+      // Static grid, no loop, no pointer tracking.
       draw();
+      return () => {
+        sleep();
+        ro.disconnect();
+      };
     }
 
-    return () => {
-      if (raf !== null) cancelAnimationFrame(raf);
-      ro.disconnect();
-      window.removeEventListener("pointermove", move);
+    const onMove = (e: PointerEvent) => {
+      move(e);
+      wake();
     };
-  }, []);
+
+    /* The contact block is the last section on the page, so without this
+       the loop would run through every other section on the way down. */
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        if (onScreen) {
+          wake();
+        } else {
+          sleep();
+        }
+      },
+      { rootMargin: "120px" }
+    );
+    io.observe(canvas);
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+
+    return () => {
+      sleep();
+      io.disconnect();
+      ro.disconnect();
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, [tone]);
 
   return (
     <canvas

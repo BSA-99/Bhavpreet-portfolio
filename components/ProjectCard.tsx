@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import ImageSlot from "@/components/ImageSlot";
+import { lockScroll, unlockScroll } from "@/lib/lenis";
 
 /**
  * GitHub's mark is a brand logo, not a UI icon. Lucide dropped brand
@@ -50,6 +51,10 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const cardRef = useRef<HTMLElement>(null);
   const frame = useRef<number | null>(null);
+  /* One node plays both parts: the zoom trigger when collapsed, the
+     dialog when expanded. */
+  const frameRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   /* Cursor spotlight. Written straight to the node's CSS custom
      properties inside rAF so the card never re-renders on move. */
@@ -84,11 +89,57 @@ export default function ProjectCard({
   }, []);
 
   const zoomable = Boolean(image);
+  const hasRepo = Boolean(githubUrl && githubUrl !== "#");
+
+  /* The expanded preview is a modal in every way that matters: it
+     covers the viewport and sits over a scrim. So it has to behave
+     like one — take focus on open, keep Tab inside itself, and hand
+     focus back to the trigger on close. Without this the keyboard is
+     still walking the page behind the overlay. */
+  useEffect(() => {
+    if (!isActive) return;
+
+    const dialog = frameRef.current;
+    if (!dialog) return;
+
+    lockScroll();
+    closeRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+
+      const focusable = dialog.querySelectorAll<HTMLElement>(
+        'button, [href], [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      unlockScroll();
+      /* Deferred: the node only regains its tabIndex once React has
+         re-rendered it as the collapsed trigger, and focus() on an
+         element without one is a no-op. */
+      requestAnimationFrame(() => dialog.focus());
+    };
+  }, [isActive]);
 
   return (
     <article
       ref={cardRef}
-      className={`glass glass-lift glass-spot flex h-full flex-col ${
+      className={`glass glass-lift glass-spot glass-materialize flex h-full flex-col ${
         isActive ? "overflow-visible" : "overflow-hidden"
       }`}
       style={
@@ -99,6 +150,7 @@ export default function ProjectCard({
       }
     >
       <div
+        ref={frameRef}
         className={`media-frame group relative z-[2] border-b border-border ${
           isActive
             ? "fixed inset-0 z-[200] cursor-zoom-out border-0 bg-bg p-6"
@@ -106,7 +158,7 @@ export default function ProjectCard({
         }`}
         onClick={zoomable ? onToggle : undefined}
         onKeyDown={
-          zoomable
+          zoomable && !isActive
             ? (e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
@@ -115,20 +167,28 @@ export default function ProjectCard({
               }
             : undefined
         }
-        role={zoomable ? "button" : undefined}
-        tabIndex={zoomable ? 0 : undefined}
-        aria-label={zoomable ? `Expand preview of ${title}` : undefined}
+        role={isActive ? "dialog" : zoomable ? "button" : undefined}
+        aria-modal={isActive ? true : undefined}
+        tabIndex={zoomable && !isActive ? 0 : undefined}
+        aria-label={
+          isActive
+            ? `Preview of ${title}`
+            : zoomable
+              ? `Expand preview of ${title}`
+              : undefined
+        }
       >
         <ImageSlot label={imageLabel} src={image} alt={title} className="h-full w-full" />
 
         {zoomable && !isActive && (
-          <div className="expand-hint pointer-events-none absolute bottom-3.5 right-3.5 flex translate-y-1.5 items-center gap-2 rounded-chip bg-text/90 px-3.5 py-2 font-mono text-[10px] tracking-[0.1em] text-bg opacity-0 backdrop-blur-sm transition-all duration-300">
+          <div className="expand-hint pointer-events-none absolute bottom-3.5 right-3.5 flex translate-y-1.5 items-center gap-2 rounded-chip bg-text/90 px-3.5 py-2 font-body text-[0.625rem] tracking-[0.1em] text-bg opacity-0 backdrop-blur-sm transition-all duration-300">
             EXPAND
           </div>
         )}
 
         {isActive && (
           <button
+            ref={closeRef}
             type="button"
             onClick={(e) => {
               e.stopPropagation();
@@ -147,16 +207,16 @@ export default function ProjectCard({
           <span className={accent === "blue" ? "chip chip-blue" : "chip"}>
             {status}
           </span>
-          <span className="font-mono text-[12px] tabular-nums text-muted">
+          <span className="font-body text-[0.75rem] tabular-nums text-muted">
             {year}
           </span>
         </div>
 
-        <h3 className="mb-3 font-display text-[19px] font-bold leading-[1.2] tracking-[-0.015em] sm:text-[22px]">
+        <h3 className="mb-3 font-display text-heading font-bold">
           {title}
         </h3>
 
-        <p className="mb-6 max-w-[54ch] font-body text-[14px] leading-[1.65] text-muted sm:text-[15px]">
+        <p className="mb-6 max-w-[54ch] font-body text-copy text-muted">
           {description}
         </p>
 
@@ -168,15 +228,32 @@ export default function ProjectCard({
           ))}
         </div>
 
-        <a
-          href={githubUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-auto inline-flex w-fit items-center gap-2.5 rounded-chip bg-text px-5 py-2.5 font-body text-[13px] font-medium text-bg transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
-        >
-          <GithubMark />
-          View on GitHub
-        </a>
+        {hasRepo ? (
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-auto inline-flex w-fit items-center gap-2.5 rounded-chip bg-text px-5 py-2.5 font-body text-[0.8125rem] font-medium text-bg transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <GithubMark />
+            View on GitHub
+          </a>
+        ) : (
+          /* A primary CTA pointing at "#" is worse than no CTA: it
+             looks live, and spends the click. Until a real URL exists
+             it says so instead. */
+          <button
+            type="button"
+            aria-disabled="true"
+            aria-label="Repository link coming soon"
+            onClick={(event) => event.preventDefault()}
+            className="mt-auto inline-flex w-fit cursor-not-allowed items-center gap-2.5 rounded-chip px-5 py-2.5 font-body text-[0.8125rem] font-medium text-muted"
+            style={{ boxShadow: "inset 0 0 0 1px var(--color-border-strong)" }}
+          >
+            <GithubMark />
+            Repo coming soon
+          </button>
+        )}
       </div>
     </article>
   );

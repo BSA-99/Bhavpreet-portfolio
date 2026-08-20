@@ -7,13 +7,20 @@
    ============================================================ */
 
 @theme {
-  /* Surfaces */
-  --color-bg: #fafaf7;
-  --color-surface: #f0efe9;
+  /* Surfaces. Pure white ground with a cool-neutral secondary surface.
+     Tangerine is the accent, not the page temperature, so every
+     non-accent value below is neutral or slightly cool to hold it. */
+  --color-bg: #ffffff;
+  --color-surface: #f3f5f7;
 
-  /* Ink */
-  --color-text: #141414;
-  --color-muted: #6b6b65;
+  /* Ink. Neutral-cool near-black, and a slate grey dark enough to
+     hold its own against the page: the previous #656a73 sat at
+     5.4:1 on white, which is fine on paper but reads as merging
+     with the atmosphere once it's behind a moving gradient and a
+     lighter body face. #475569 clears 7.6:1 (AAA) and keeps the
+     same cool, no-olive undertone. */
+  --color-text: #101114;
+  --color-muted: #475569;
 
   /* Accents. `accent` is the primary tangerine, `accent-2` the blue.
      `-ink` variants are the AA-safe versions for text on light
@@ -24,12 +31,67 @@
   --color-accent-2-ink: #2b3fbe;
 
   /* Hairlines. Glass carries its own edge, so these stay whisper thin. */
-  --color-border: rgba(20, 20, 20, 0.09);
-  --color-border-strong: rgba(20, 20, 20, 0.16);
+  --color-border: rgba(16, 17, 20, 0.09);
+  --color-border-strong: rgba(16, 17, 20, 0.16);
 
-  --font-display: var(--font-heading);
-  --font-body: var(--font-body);
-  --font-mono: var(--font-mono-stack);
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+
+  /* TYPE SCALE
+     Size, leading and tracking are defined as one set per step, never
+     picked separately at the call site — that is how the same optical
+     size ended up with two different trackings.
+
+     Everything is rem, so the whole scale answers the reader's browser
+     text-size setting. Display steps use clamp() to interpolate rather
+     than jump at a breakpoint. Tracking goes negative as the type
+     grows and slightly positive at the small end, because letters read
+     further apart the larger they get. */
+
+  /* 32px → 72px. The contact headline, the largest thing on the page. */
+  --text-hero: clamp(2rem, 1.1rem + 4.5vw, 4.5rem);
+  --text-hero--line-height: 1.02;
+  --text-hero--letter-spacing: -0.035em;
+
+  /* 32px → 58px. The h1. */
+  --text-display: clamp(2rem, 1.35rem + 3.25vw, 3.625rem);
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.03em;
+
+  /* 26px → 44px. Section headings. */
+  --text-title: clamp(1.625rem, 1.2rem + 2.15vw, 2.75rem);
+  --text-title--line-height: 1.12;
+  --text-title--letter-spacing: -0.025em;
+
+  /* 18px → 22px. Card and row headings. */
+  --text-heading: clamp(1.125rem, 1rem + 0.6vw, 1.375rem);
+  --text-heading--line-height: 1.2;
+  --text-heading--letter-spacing: -0.015em;
+
+  /* 15px → 17px. Lead paragraphs. */
+  --text-lead: clamp(0.9375rem, 0.88rem + 0.28vw, 1.0625rem);
+  --text-lead--line-height: 1.7;
+  --text-lead--letter-spacing: 0em;
+
+  /* 14px → 15px. Body copy inside cards. */
+  --text-copy: clamp(0.875rem, 0.845rem + 0.15vw, 0.9375rem);
+  --text-copy--line-height: 1.65;
+  --text-copy--letter-spacing: 0em;
+
+  /* Small steps are fixed — they are UI, not prose, and should not
+     grow into the layout. Positive tracking for legibility. */
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.5;
+  --text-meta--letter-spacing: 0.005em;
+
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1.6;
+  --text-micro--letter-spacing: 0.03em;
+
+  /* All-caps eyebrow labels. The wide tracking is the treatment. */
+  --text-label: 0.625rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.16em;
 
   /* SHAPE CONSISTENCY LOCK
      panel = cards, glass surfaces, media frames
@@ -39,16 +101,26 @@
   --radius-panel: 24px;
   --radius-inner: 14px;
   --radius-chip: 999px;
-
-  --animate-metal-sheen: metal-sheen 7s linear infinite;
 }
 
-@keyframes metal-sheen {
-  from {
-    background-position: 0% 0%;
-  }
-  to {
-    background-position: 250% 0%;
+/* ============================================================
+   WORDMARK
+   The sheen is a one-shot on hover, not a loop. An SVG filter over
+   text repaints off the compositor, so a perpetual sweep in fixed
+   chrome would cost a rasterisation every frame for the whole
+   session. Same sweep, now a response to the visitor.
+   ============================================================ */
+
+.liquid-metal__fill {
+  background-size: 250% 100%;
+  background-position: 0% 0%;
+  transition: background-position 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .liquid-metal:hover .liquid-metal__fill,
+  a:hover > .liquid-metal .liquid-metal__fill {
+    background-position: 100% 0%;
   }
 }
 
@@ -76,22 +148,33 @@
      "blurred": real frost scatters light unevenly. */
   --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
 
-  /* Shadows tinted to the warm page hue, never neutral black. */
-  --glass-shadow: 0 2px 6px -2px rgba(60, 34, 18, 0.08),
-    0 28px 64px -30px rgba(60, 34, 18, 0.4);
+  /* Shadows tinted cool rather than pure black, so they sit under a
+     white page without muddying it. */
+  --glass-shadow: 0 2px 6px -2px rgba(16, 24, 40, 0.08),
+    0 28px 64px -30px rgba(16, 24, 40, 0.4);
 
   --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(60, 34, 18, 0.07);
+    inset 0 -1px 0 rgba(16, 24, 40, 0.07);
+
+  /* The one emphasis gradient: blue into violet into tangerine, so the
+     two accents meet in a single sweep rather than fighting. It is used
+     twice — the hero's emphasised phrase and the footer wordmark — and
+     lives here so those two can never drift out of step. */
+  --gradient-emphasis: linear-gradient(90deg, #2b46e0, #8a3fe0 50%, #e0551f);
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* No `scroll-behavior: smooth` here. Lenis runs with `anchors: true`
+   and animates anchor jumps itself; leaving the native version on puts
+   two smoothing implementations on the same click. The reduced-motion
+   block below still pins it to `auto` as a belt-and-braces default. */
 
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
+  /* Let the variable face adjust its own shapes with size, rather than
+     scaling one drawing up and down. */
+  font-optical-sizing: auto;
 }
 
 ::selection {
@@ -185,12 +268,15 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
+  /* Cool-led, with tangerine only as the far tail. On a pure white
+     page this edge is doing most of the work of saying "glass", so it
+     carries a touch more contrast than it did on the off-white. */
   background: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.98) 0%,
-    rgba(255, 255, 255, 0.34) 34%,
-    rgba(255, 107, 53, 0.34) 72%,
-    rgba(61, 90, 254, 0.28) 100%
+    rgba(190, 205, 225, 0.55) 32%,
+    rgba(61, 90, 254, 0.3) 74%,
+    rgba(255, 107, 53, 0.22) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -201,6 +287,22 @@ body {
   z-index: 3;
 }
 
+/* VIBRANCY
+   Inter is drawn for UI at 12-17px, which means it carries noticeably
+   less optical mass than the Archivo grotesque it replaced — flat grey
+   at weight 400 loses its footing, on glass or off it. The fix is not
+   only a darker grey (above) but a little more presence: weight 450
+   and a touch of tracking, matched to Apple's approach to vibrancy
+   text. Scoped to the two prose sizes (`text-lead`, `text-copy`) —
+   the small UI sizes (`text-meta`, `text-label`) already carry their
+   own explicit weight and are tracked wide enough not to need it. */
+
+.text-muted.text-lead,
+.text-muted.text-copy {
+  font-weight: 450;
+  letter-spacing: 0.006em;
+}
+
 /* Quieter pane for large background panels that should recede. */
 .glass-quiet {
   --glass-fill: linear-gradient(
@@ -208,7 +310,7 @@ body {
     rgba(255, 255, 255, 0.36) 0%,
     rgba(255, 255, 255, 0.12) 100%
   );
-  --glass-shadow: 0 18px 44px -30px rgba(60, 34, 18, 0.3);
+  --glass-shadow: 0 18px 44px -30px rgba(16, 24, 40, 0.3);
 }
 
 .glass-quiet::after {
@@ -216,7 +318,7 @@ body {
     145deg,
     rgba(255, 255, 255, 0.82) 0%,
     rgba(255, 255, 255, 0.18) 46%,
-    rgba(60, 34, 18, 0.1) 100%
+    rgba(16, 24, 40, 0.1) 100%
   );
 }
 
@@ -230,25 +332,29 @@ body {
     rgba(255, 255, 255, 0.46) 100%
   );
   --glass-blur: blur(44px) saturate(200%) brightness(1.06);
-  --glass-shadow: 0 3px 8px -3px rgba(60, 34, 18, 0.1),
-    0 40px 90px -40px rgba(60, 34, 18, 0.45);
+  --glass-shadow: 0 3px 8px -3px rgba(16, 24, 40, 0.1),
+    0 40px 90px -40px rgba(16, 24, 40, 0.45);
 }
 
+/* Response 0.4, matching the ENTER spring in lib/motion.ts. */
 .glass-lift {
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (hover: hover) {
   .glass-lift:hover {
     transform: translateY(-5px);
-    box-shadow: var(--glass-inset), 0 2px 6px -2px rgba(60, 34, 18, 0.1),
-      0 44px 88px -34px rgba(60, 34, 18, 0.46);
+    box-shadow: var(--glass-inset), 0 2px 6px -2px rgba(16, 24, 40, 0.1),
+      0 44px 88px -34px rgba(16, 24, 40, 0.46);
   }
 }
 
+/* Press feedback is the one thing that must not ease in. A settle
+   curve on the way down reads as lag on the input path. */
 .glass-lift:active {
   transform: translateY(-1px) scale(0.995);
+  transition: transform 100ms ease-out;
 }
 
 /* Cursor spotlight. --mx/--my are written straight to the node's style
@@ -287,6 +393,44 @@ body {
   }
 }
 
+/* The third signal. Reduced-motion and reduced-transparency were
+   already handled; high contrast asks for near-solid grounds and a
+   border that is actually defined rather than a whisper. */
+@media (prefers-contrast: more) {
+  .glass,
+  .glass-quiet,
+  .glass-deep {
+    background-image: none;
+    background-color: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: inset 0 0 0 1px var(--color-text);
+  }
+
+  .glass::after,
+  .glass-quiet::after,
+  .glass-deep::after {
+    display: none;
+  }
+
+  :root {
+    --color-muted: #40444b;
+    --color-border: rgba(16, 17, 20, 0.4);
+    --color-border-strong: rgba(16, 17, 20, 0.7);
+  }
+}
+
+/* Windows High Contrast replaces backgrounds wholesale, which would
+   erase a headline painted with background-clip: text — the emphasised
+   phrase would simply vanish. Hand it back a real colour. */
+@media (forced-colors: active) {
+  .gradient-text {
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
+    color: currentColor !important;
+  }
+}
+
 /* ============================================================
    CHIPS
    ============================================================ */
@@ -297,10 +441,10 @@ body {
   gap: 0.375rem;
   border-radius: var(--radius-chip);
   padding: 0.3rem 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  line-height: 1.6;
+  font-family: var(--font-body);
+  font-size: var(--text-micro);
+  letter-spacing: var(--text-micro--letter-spacing);
+  line-height: var(--text-micro--line-height);
   color: var(--color-accent-ink);
   background: color-mix(in srgb, var(--color-accent) 10%, transparent);
   box-shadow: inset 0 0 0 1px
@@ -323,13 +467,6 @@ body {
   box-shadow: inset 0 0 0 1px var(--color-border-strong);
 }
 
-/* Chips sitting on the dark contact block. */
-.chip-invert {
-  color: rgba(250, 250, 247, 0.82);
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-}
-
 /* ============================================================
    BUTTONS
    ============================================================ */
@@ -343,10 +480,10 @@ body {
   border-radius: var(--radius-chip);
   background: var(--color-text);
   color: var(--color-bg);
-  box-shadow: 0 2px 4px -2px rgba(60, 34, 18, 0.3),
-    0 16px 32px -16px rgba(20, 20, 20, 0.6);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px -2px rgba(16, 24, 40, 0.3),
+    0 16px 32px -16px rgba(16, 17, 20, 0.6);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary::before {
@@ -369,8 +506,8 @@ body {
 @media (hover: hover) {
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 3px 6px -2px rgba(60, 34, 18, 0.34),
-      0 22px 44px -18px rgba(20, 20, 20, 0.66);
+    box-shadow: 0 3px 6px -2px rgba(16, 24, 40, 0.34),
+      0 22px 44px -18px rgba(16, 17, 20, 0.66);
   }
 
   .btn-primary:hover::before {
@@ -380,14 +517,15 @@ body {
 
 .btn-primary:active {
   transform: translateY(0) scale(0.985);
+  transition: transform 100ms ease-out;
 }
 
 /* Secondary CTA. A frosted pane rather than an outline, so the two
    buttons read as the same material family. */
 .btn-ghost {
   border-radius: var(--radius-chip);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (hover: hover) {
@@ -398,6 +536,7 @@ body {
 
 .btn-ghost:active {
   transform: translateY(0) scale(0.985);
+  transition: transform 100ms ease-out;
 }
 
 /* ============================================================
@@ -412,6 +551,35 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* MATERIALIZE
+   A frosted pane that fades in is a picture of glass appearing. A pane
+   whose blur and scale resolve together reads as glass arriving. The
+   difference is small per element and obvious across a section. */
+@keyframes materialize {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+    -webkit-backdrop-filter: blur(4px) saturate(120%);
+    backdrop-filter: blur(4px) saturate(120%);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+  }
+}
+
+.glass-materialize {
+  animation: materialize 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-materialize {
+    animation: none;
   }
 }
 
@@ -460,7 +628,8 @@ body {
   .rule-draw,
   .btn-primary,
   .btn-primary::before,
-  .btn-ghost {
+  .btn-ghost,
+  .liquid-metal__fill {
     transition: none !important;
   }
 }

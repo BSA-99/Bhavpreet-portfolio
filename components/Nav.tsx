@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
-import MagneticButton from "@/components/MagneticButton";
+import ResumeLink from "@/components/ResumeLink";
 import LiquidMetalText from "@/components/LiquidMetalText";
+import { ENTER } from "@/lib/motion";
+import { lockScroll, unlockScroll } from "@/lib/lenis";
 
 /* Numbers follow page order: About, Work, Projects, Practice, Contact.
    Slugs are unchanged so existing anchors and links keep working. */
@@ -23,7 +24,7 @@ const container: Variants = {
 
 const item: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: ENTER },
 };
 
 export default function Nav() {
@@ -31,10 +32,9 @@ export default function Nav() {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    if (!isOpen) return;
+    lockScroll();
+    return unlockScroll;
   }, [isOpen]);
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function Nav() {
         <nav className="glass mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-4 px-4 sm:h-[64px] sm:px-5">
           <a
             href="#"
-            className="relative z-[2] font-display text-[11px] font-bold tracking-tight whitespace-nowrap sm:text-[13px] lg:text-[15px]"
+            className="relative z-[2] font-display text-[0.6875rem] font-bold tracking-tight whitespace-nowrap sm:text-[0.8125rem] lg:text-[0.9375rem]"
           >
             <LiquidMetalText text="BHAVPREET SINGH ARNEJA" />
           </a>
@@ -106,12 +106,12 @@ export default function Nav() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className={`font-body text-[14px] transition-colors duration-200 ${
+                    className={`font-body text-[0.875rem] transition-colors duration-200 ${
                       isActive ? "text-text" : "text-muted hover:text-text"
                     }`}
                   >
                     <span
-                      className={`font-mono text-[11px] ${
+                      className={`font-body text-[0.6875rem] ${
                         isActive ? "text-accent-ink" : "text-accent-2-ink/70"
                       }`}
                     >
@@ -125,31 +125,18 @@ export default function Nav() {
           </ul>
 
           <div className="relative z-[2] flex items-center gap-2.5">
-            <MagneticButton>
-              {RESUME_AVAILABLE ? (
-                <a
-                  href={RESUME_HREF}
-                  className="inline-flex whitespace-nowrap rounded-chip bg-text px-4 py-2 font-body text-[13px] font-medium text-bg transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 sm:px-5 sm:py-2.5"
-                >
-                  Résumé
-                </a>
-              ) : (
-                <span
-                  aria-disabled="true"
-                  title="Coming soon"
-                  className="inline-flex cursor-not-allowed whitespace-nowrap rounded-chip bg-text/45 px-4 py-2 font-body text-[13px] font-medium text-bg sm:px-5 sm:py-2.5"
-                >
-                  Résumé
-                </span>
-              )}
-            </MagneticButton>
+            <ResumeLink
+              tone="solid"
+              showArrow={false}
+              className="px-4 py-2 text-[0.8125rem] sm:px-5 sm:py-2.5"
+            />
 
             <button
               type="button"
               onClick={() => setIsOpen((prev) => !prev)}
               aria-expanded={isOpen}
               aria-label={isOpen ? "Close menu" : "Open menu"}
-              className="rounded-chip px-4 py-2 font-body text-[13px] font-medium text-text transition-colors duration-200 hover:bg-text/5 lg:hidden"
+              className="rounded-chip px-4 py-2 font-body text-[0.8125rem] font-medium text-text transition-colors duration-200 hover:bg-text/5 lg:hidden"
               style={{ boxShadow: "inset 0 0 0 1px var(--color-border-strong)" }}
             >
               {isOpen ? "Close" : "Menu"}
@@ -180,9 +167,9 @@ export default function Nav() {
                   <a
                     href={link.href}
                     onClick={closeMenu}
-                    className="font-display text-[34px] font-bold tracking-[-0.03em]"
+                    className="font-display text-[2.125rem] font-bold tracking-[-0.03em]"
                   >
-                    <span className="font-mono text-base text-accent-2-ink">
+                    <span className="font-body text-base text-accent-2-ink">
                       {link.number}
                     </span>{" "}
                     {link.label}
@@ -191,23 +178,12 @@ export default function Nav() {
               ))}
 
               <motion.li variants={item} className="pt-4">
-                {RESUME_AVAILABLE ? (
-                  <a
-                    href={RESUME_HREF}
-                    onClick={closeMenu}
-                    className="inline-block rounded-chip bg-text px-6 py-3 font-body text-base font-medium text-bg"
-                  >
-                    Résumé
-                  </a>
-                ) : (
-                  <span
-                    aria-disabled="true"
-                    title="Coming soon"
-                    className="inline-block cursor-not-allowed rounded-chip bg-text/45 px-6 py-3 font-body text-base font-medium text-bg"
-                  >
-                    Résumé
-                  </span>
-                )}
+                <ResumeLink
+                  tone="solid"
+                  showArrow={false}
+                  onNavigate={closeMenu}
+                  className="px-6 py-3 text-base"
+                />
               </motion.li>
             </motion.ul>
           </motion.div>
