@@ -1,21 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, Variants } from "framer-motion";
+import Link from "next/link";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  Variants,
+} from "framer-motion";
 import ResumeLink from "@/components/ResumeLink";
 import LiquidMetalText from "@/components/LiquidMetalText";
-import { ENTER } from "@/lib/motion";
-import { lockScroll, unlockScroll } from "@/lib/lenis";
+import { ENTER, SNAP } from "@/lib/motion";
+import { lockScroll, subscribeScrollProgress, unlockScroll } from "@/lib/lenis";
 
-/* Numbers follow page order: About, Work, Projects, Practice, Contact.
-   Slugs are unchanged so existing anchors and links keep working. */
+/* Numbers follow page order: About, Work, Projects, Skills, Contact.
+   Hrefs are root-relative rather than bare fragments so the nav still
+   works from the /work/[slug] detail pages, where a bare "#about" would
+   resolve against a page that has no such section. */
 const navLinks = [
-  { number: "01", label: "About", href: "#about" },
-  { number: "02", label: "Work", href: "#work" },
-  { number: "03", label: "Projects", href: "#projects" },
-  { number: "04", label: "Practice", href: "#skills" },
-  { number: "05", label: "Contact", href: "#contact" },
+  { number: "01", label: "About", href: "/#about" },
+  { number: "02", label: "Work", href: "/#work" },
+  { number: "03", label: "Projects", href: "/#projects" },
+  { number: "04", label: "Skills", href: "/#skills" },
+  { number: "05", label: "Contact", href: "/#contact" },
 ];
+
+/** "/#about" -> "about". The nav hrefs carry the leading slash so they
+ *  work off-page; the observer below needs the bare element id. */
+const sectionId = (href: string) => href.replace(/^\/?#/, "");
 
 const container: Variants = {
   hidden: {},
@@ -30,6 +43,25 @@ const item: Variants = {
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const reduce = useReducedMotion();
+
+  /* Scroll progress as a 0-1 value, which is exactly a scaleX.
+     Published from the frame loop in lib/lenis.ts rather than read via
+     Motion's `useScroll` or a DOM scroll listener, neither of which
+     tracks correctly under Lenis.
+
+     Not passed through `useSpring`. Lenis has already smoothed the
+     scroll position, so a spring on top is a second smoothing pass on
+     the same input — and because the value is set from inside a rAF
+     callback, after Motion's frame loop has run, the spring is
+     re-targeted a frame late on every update and crawls instead of
+     following. The raw value is both exact and already smooth. */
+  const progress = useMotionValue(0);
+
+  useEffect(
+    () => subscribeScrollProgress((value) => progress.set(value)),
+    [progress]
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -49,7 +81,7 @@ export default function Nav() {
 
   useEffect(() => {
     const sections = navLinks
-      .map((link) => document.getElementById(link.href.slice(1)))
+      .map((link) => document.getElementById(sectionId(link.href)))
       .filter((section): section is HTMLElement => section !== null);
 
     if (sections.length === 0) return;
@@ -91,19 +123,33 @@ export default function Nav() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-        <nav className="glass mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-4 px-4 sm:h-[64px] sm:px-5">
-          <a
-            href="#"
+        <nav className="glass relative mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-4 overflow-hidden px-4 sm:h-[64px] sm:px-5">
+          {/* Read progress, clipped to the pill's own rounding. It is
+              driven straight off scroll rather than animating on its
+              own, so it stays legible under reduced motion — only the
+              spring smoothing is dropped there. */}
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[2px] origin-left"
+            style={{
+              scaleX: progress,
+              background: "var(--gradient-emphasis)",
+              opacity: 0.9,
+            }}
+          />
+
+          <Link
+            href="/"
             className="relative z-[2] font-display text-[0.6875rem] font-bold tracking-tight whitespace-nowrap sm:text-[0.8125rem] lg:text-[0.9375rem]"
           >
             <LiquidMetalText text="BHAVPREET SINGH ARNEJA" />
-          </a>
+          </Link>
 
           <ul className="relative z-[2] hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => {
-              const isActive = activeId === link.href.slice(1);
+              const isActive = activeId === sectionId(link.href);
               return (
-                <li key={link.href}>
+                <li key={link.href} className="relative">
                   <a
                     href={link.href}
                     className={`font-body text-[0.875rem] transition-colors duration-200 ${
@@ -111,7 +157,7 @@ export default function Nav() {
                     }`}
                   >
                     <span
-                      className={`font-body text-[0.6875rem] ${
+                      className={`nav-number font-body ${
                         isActive ? "text-accent-ink" : "text-accent-2-ink/70"
                       }`}
                     >
@@ -119,6 +165,20 @@ export default function Nav() {
                     </span>{" "}
                     {link.label}
                   </a>
+
+                  {/* One element, shared across all five items by
+                      `layoutId` — Motion tweens it between their boxes
+                      instead of cross-fading five separate rules, so the
+                      marker travels with the reader down the page. */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-active"
+                      aria-hidden="true"
+                      className="absolute -bottom-1.5 left-0 right-0 h-[2px] rounded-chip"
+                      style={{ background: "var(--gradient-emphasis)" }}
+                      transition={reduce ? { duration: 0 } : SNAP}
+                    />
+                  )}
                 </li>
               );
             })}
@@ -127,7 +187,6 @@ export default function Nav() {
           <div className="relative z-[2] flex items-center gap-2.5">
             <ResumeLink
               tone="solid"
-              showArrow={false}
               className="px-4 py-2 text-[0.8125rem] sm:px-5 sm:py-2.5"
             />
 
@@ -180,7 +239,6 @@ export default function Nav() {
               <motion.li variants={item} className="pt-4">
                 <ResumeLink
                   tone="solid"
-                  showArrow={false}
                   onNavigate={closeMenu}
                   className="px-6 py-3 text-base"
                 />

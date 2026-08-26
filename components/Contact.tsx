@@ -9,10 +9,10 @@ const LINKEDIN = "https://www.linkedin.com/in/bhavpreetsingharneja/";
 /* Mirrors the nav, minus Contact — the footer is Contact, and a link
    that scrolls you to where you already are is furniture. */
 const sections = [
-  { label: "About", href: "#about" },
-  { label: "Work", href: "#work" },
-  { label: "Projects", href: "#projects" },
-  { label: "Practice", href: "#skills" },
+  { label: "About", href: "/#about" },
+  { label: "Work", href: "/#work" },
+  { label: "Projects", href: "/#projects" },
+  { label: "Skills", href: "/#skills" },
 ];
 
 const elsewhere = [
@@ -25,7 +25,7 @@ const elsewhere = [
    else, so they sit in the footer rather than only in the About copy. */
 const currently = [
   "Open to new-grad roles",
-  "Cloud Centre of Excellence, Sobeys",
+  "3 co-op terms completed, Sobeys",
   "CS Co-op at StFX, graduating Dec 2026",
   "Nova Scotia, Canada",
 ];
@@ -80,10 +80,13 @@ export default function Contact() {
         <DotField tone="light" />
 
         <div className="relative z-[2]">
-          <h2 className="mb-9 max-w-[17ch] font-display text-hero font-bold text-text">
-            Looking for a new-grad engineer who leaves things more boring than
-            they found them.
+          <h2 className="mb-4 max-w-[17ch] font-display text-hero font-bold text-text">
+            Ready to build things that hold up in production.
           </h2>
+          <p className="mb-9 max-w-[52ch] font-body text-lead text-muted">
+            Open to new-grad roles in cloud, data, and AI. Let&apos;s build
+            something that ships.
+          </p>
 
           <div className="flex flex-wrap gap-3">
             <a
@@ -116,8 +119,8 @@ export default function Contact() {
               </p>
 
               <p className="mt-5 max-w-[34ch] font-body text-copy text-muted">
-                Cloud and AI infrastructure. Governance tooling, access
-                reviews, and models that ship somewhere other than a notebook.
+                Software engineer building infrastructure, pipelines, and
+                models that run in production.
               </p>
 
               <div className="mt-6 flex items-center gap-1">
@@ -224,6 +227,8 @@ export default function Contact() {
             <div className="flex flex-wrap items-center gap-x-7 gap-y-2">
               <span>Nova Scotia, Canada</span>
               <span>Built with Next.js and Tailwind</span>
+              {/* Bare "#" on purpose: "top" means the top of whichever
+                  page this footer is rendered on, home or a work term. */}
               <a
                 href="#"
                 className="transition-colors duration-200 hover:text-text"

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
-import { setLenis } from "@/lib/lenis";
+import { setLenis, tickScrollProgress } from "@/lib/lenis";
 
 export default function SmoothScroll() {
   useEffect(() => {
@@ -19,6 +19,9 @@ export default function SmoothScroll() {
 
     function raf(time: number) {
       lenis.raf(time);
+      /* Publishes scroll progress to subscribers. Piggybacks on this
+         loop rather than opening a second one — see lib/lenis.ts. */
+      tickScrollProgress();
       rafId = requestAnimationFrame(raf);
     }
 

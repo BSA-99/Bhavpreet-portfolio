@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import ImageSlot from "@/components/ImageSlot";
 import { lockScroll, unlockScroll } from "@/lib/lenis";
@@ -28,6 +29,8 @@ export interface ProjectCardProps {
   /** Real screenshot. When absent the media frame is an inert placeholder
    *  rather than a zoom target, so there is nothing to expand into. */
   image?: string;
+  /** Crop bias for screenshots wider than the 16/10 frame. */
+  imagePosition?: string;
   githubUrl: string;
   accent?: "orange" | "blue";
   isActive: boolean;
@@ -43,6 +46,7 @@ export default function ProjectCard({
   status,
   imageLabel,
   image,
+  imagePosition,
   githubUrl,
   accent = "orange",
   isActive,
@@ -149,58 +153,79 @@ export default function ProjectCard({
         } as React.CSSProperties
       }
     >
-      <div
-        ref={frameRef}
-        className={`media-frame group relative z-[2] border-b border-border ${
-          isActive
-            ? "fixed inset-0 z-[200] cursor-zoom-out border-0 bg-bg p-6"
-            : `aspect-[16/10] overflow-hidden ${zoomable ? "cursor-zoom-in" : ""}`
-        }`}
-        onClick={zoomable ? onToggle : undefined}
-        onKeyDown={
-          zoomable && !isActive
-            ? (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onToggle();
-                }
-              }
-            : undefined
-        }
-        role={isActive ? "dialog" : zoomable ? "button" : undefined}
-        aria-modal={isActive ? true : undefined}
-        tabIndex={zoomable && !isActive ? 0 : undefined}
-        aria-label={
-          isActive
-            ? `Preview of ${title}`
-            : zoomable
-              ? `Expand preview of ${title}`
-              : undefined
-        }
-      >
-        <ImageSlot label={imageLabel} src={image} alt={title} className="h-full w-full" />
-
-        {zoomable && !isActive && (
-          <div className="expand-hint pointer-events-none absolute bottom-3.5 right-3.5 flex translate-y-1.5 items-center gap-2 rounded-chip bg-text/90 px-3.5 py-2 font-body text-[0.625rem] tracking-[0.1em] text-bg opacity-0 backdrop-blur-sm transition-all duration-300">
-            EXPAND
-          </div>
-        )}
-
-        {isActive && (
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }}
-            aria-label="Close preview"
-            className="glass fixed right-5 top-5 z-[210] flex h-11 w-11 items-center justify-center rounded-chip text-text"
+      {(() => {
+        const frame = (
+          <div
+            ref={frameRef}
+            className={`media-frame group border-b border-border ${
+              isActive
+                ? "fixed inset-0 z-[200] cursor-zoom-out border-0 bg-bg p-6"
+                : `relative z-[2] aspect-[16/10] overflow-hidden ${zoomable ? "cursor-zoom-in" : ""}`
+            }`}
+            onClick={zoomable ? onToggle : undefined}
+            onKeyDown={
+              zoomable && !isActive
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onToggle();
+                    }
+                  }
+                : undefined
+            }
+            role={isActive ? "dialog" : zoomable ? "button" : undefined}
+            aria-modal={isActive ? true : undefined}
+            tabIndex={zoomable && !isActive ? 0 : undefined}
+            aria-label={
+              isActive
+                ? `Preview of ${title}`
+                : zoomable
+                  ? `Expand preview of ${title}`
+                  : undefined
+            }
           >
-            <X size={19} strokeWidth={2} />
-          </button>
-        )}
-      </div>
+            <ImageSlot
+              label={imageLabel}
+              src={image}
+              alt={title}
+              className="h-full w-full"
+              objectPosition={imagePosition}
+            />
+
+            {zoomable && !isActive && (
+              <div className="expand-hint pointer-events-none absolute bottom-3.5 right-3.5 flex translate-y-1.5 items-center gap-2 rounded-chip bg-text/90 px-3.5 py-2 font-body text-[0.625rem] tracking-[0.1em] text-bg opacity-0 backdrop-blur-sm transition-all duration-300">
+                EXPAND
+              </div>
+            )}
+
+            {isActive && (
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                aria-label="Close preview"
+                className="glass fixed right-5 top-5 z-[210] flex h-11 w-11 items-center justify-center rounded-chip text-text"
+              >
+                <X size={19} strokeWidth={2} />
+              </button>
+            )}
+          </div>
+        );
+
+        /* `.glass` puts a backdrop-filter on this card, and a
+           backdrop-filter establishes a new containing block for any
+           `position: fixed` descendant — so without a portal, the
+           expanded frame's "fixed inset-0" resolves against the card's
+           own box instead of the viewport, and the "full-screen"
+           preview never grows past the thumbnail. Escaping to
+           document.body sidesteps that entirely. */
+        return isActive && typeof document !== "undefined"
+          ? createPortal(frame, document.body)
+          : frame;
+      })()}
 
       <div className="relative z-[2] flex flex-1 flex-col p-7 sm:p-9">
         <div className="mb-4 flex items-center justify-between gap-3">

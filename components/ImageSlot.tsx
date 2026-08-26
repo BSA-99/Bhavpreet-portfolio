@@ -6,6 +6,9 @@ interface ImageSlotProps {
   src?: string;
   alt?: string;
   className?: string;
+  /** CSS object-position, for screenshots wider than the 16/10 frame
+   *  where a centred crop would cut into the content that matters. */
+  objectPosition?: string;
 }
 
 /**
@@ -13,11 +16,24 @@ interface ImageSlotProps {
  * Deliberately quiet: it should read as a reserved slot, not as
  * decoration pretending to be content.
  */
-export default function ImageSlot({ label, src, alt, className }: ImageSlotProps) {
+export default function ImageSlot({
+  label,
+  src,
+  alt,
+  className,
+  objectPosition = "50% 50%",
+}: ImageSlotProps) {
   if (src) {
     return (
       <div className={`relative overflow-hidden ${className ?? ""}`}>
-        <Image src={src} alt={alt ?? ""} fill sizes="(max-width: 768px) 100vw, 600px" className="object-cover" />
+        <Image
+          src={src}
+          alt={alt ?? ""}
+          fill
+          sizes="(max-width: 768px) 100vw, 600px"
+          className="object-cover"
+          style={{ objectPosition }}
+        />
       </div>
     );
   }

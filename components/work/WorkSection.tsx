@@ -1,14 +1,18 @@
 "use client";
 
-import { Fragment, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
+import { PHYSICAL } from "@/lib/motion";
+import { renderBoldText } from "./rich-text";
 import { workEntries } from "./work-data";
 
 const EMPLOYER_META = [
   { label: "EMPLOYER", value: "Sobeys Inc." },
   { label: "LOCATION", value: "Stellarton, NS" },
   { label: "TERMS", value: "3" },
-  { label: "SPAN", value: "May 2025 to Present" },
+  { label: "SPAN", value: "May 2025 - Aug 2026" },
 ];
 
 const ACCENT_VAR: Record<string, string> = {
@@ -21,22 +25,6 @@ const ACCENT_INK: Record<string, string> = {
   orange: "var(--color-accent-ink)",
 };
 
-function renderBoldText(text: string, bold?: string[]) {
-  if (!bold || bold.length === 0) return text;
-  const escaped = bold.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const pattern = new RegExp(`(${escaped.join("|")})`, "g");
-  const parts = text.split(pattern);
-  return parts.map((part, i) =>
-    bold.includes(part) ? (
-      <b key={i} className="font-semibold text-text">
-        {part}
-      </b>
-    ) : (
-      <Fragment key={i}>{part}</Fragment>
-    )
-  );
-}
-
 export default function WorkSection() {
   /* Every term is expanded on arrival. The detail is the point of this
      section, so hiding it behind a click costs more than it saves.
@@ -44,6 +32,7 @@ export default function WorkSection() {
   const [openIds, setOpenIds] = useState<Set<string>>(
     () => new Set(workEntries.map((entry) => entry.id))
   );
+  const reduce = useReducedMotion();
 
   const toggle = (id: string) =>
     setOpenIds((prev) => {
@@ -64,13 +53,13 @@ export default function WorkSection() {
       <div className="mx-auto max-w-[1200px]">
         <header className="mb-10 max-w-[62ch] lg:mb-12">
           <h2 className="mb-5 max-w-[24ch] font-display text-title font-bold">
-            Three terms building the guardrails that keep a cloud estate
-            honest.
+            Three co-op terms building and automating enterprise cloud
+            infrastructure.
           </h2>
           <p className="font-body text-lead text-muted">
-            Governance tooling, access reviews, and automation across three
-            terms on Sobeys&apos; Cloud Centre of Excellence team. The
-            unglamorous work that keeps production boring.
+            Azure governance, identity and access management, policy
+            automation, and Databricks provisioning — across three co-op
+            terms on the Cloud Centre of Excellence team at Sobeys.
           </p>
         </header>
 
@@ -141,11 +130,6 @@ export default function WorkSection() {
                   </span>
 
                   <span className="flex shrink-0 items-center gap-3 sm:gap-5">
-                    {entry.current && (
-                      <span className="chip hidden sm:inline-flex">
-                        Current
-                      </span>
-                    )}
                     <span className="hidden font-body text-[0.75rem] tabular-nums text-muted md:inline">
                       {entry.dates}
                     </span>
@@ -159,72 +143,72 @@ export default function WorkSection() {
                   </span>
                 </button>
 
-                {open && (
-                  <div
-                    id={`work-panel-${entry.id}`}
-                    className="grid animate-[riseIn_320ms_cubic-bezier(0.16,1,0.3,1)_both] grid-cols-1 gap-10 px-6 pb-10 sm:grid-cols-[1.3fr_0.7fr] sm:gap-14 sm:px-9 sm:pb-12 sm:pl-[112px]"
-                  >
-                    <div>
-                      <div className="mb-5 flex flex-wrap gap-2">
-                        {entry.stack.map((tech) => (
-                          <span
-                            key={tech}
-                            className={
-                              entry.accent === "blue" ? "chip chip-blue" : "chip"
-                            }
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                      <ul className="flex flex-col gap-4">
-                        {entry.bullets.map((bullet, i) => (
-                          <li
-                            key={i}
-                            className="grid grid-cols-[10px_1fr] gap-4 font-body text-copy text-muted"
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="mt-[9px] block h-[6px] w-[6px] rounded-full"
-                              style={{ background: accent }}
-                            />
-                            <span>{renderBoldText(bullet.text, bullet.bold)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Not a glass pane. This sits inside the glass
-                        list above it, and stacking one translucent
-                        surface on another blurs an already-blurred
-                        backdrop — the second pane adds haze, not
-                        depth, and the numbers are the one thing in
-                        this row that must stay crisp. A solid inset
-                        with a hairline reads as nested instead. */}
-                    <div className="grid grid-cols-3 self-start overflow-hidden rounded-panel bg-white/55 shadow-[inset_0_0_0_1px_var(--color-border)] sm:grid-cols-1">
-                      {entry.metrics.map((metric, i) => (
-                        <div
-                          key={i}
-                          className={`relative z-[2] px-4 py-4 ${
-                            i < entry.metrics.length - 1
-                              ? "border-r border-border sm:border-r-0 sm:border-b"
-                              : ""
-                          }`}
+                {/* The panel used to appear at full height and fade,
+                    which jumped the rows below it by its entire height
+                    in one frame. Animating height means the list opens
+                    and closes rather than cutting. `PHYSICAL` carries a
+                    little overshoot because this is motion the reader
+                    started by pulling the row open. */}
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      key="panel"
+                      id={`work-panel-${entry.id}`}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={
+                        reduce
+                          ? { duration: 0 }
+                          : { ...PHYSICAL, opacity: { duration: 0.2 } }
+                      }
+                      className="overflow-hidden"
+                    >
+                      {/* Padding lives on this inner node so the
+                          animated wrapper can collapse to a true 0. */}
+                      <div className="px-6 pb-10 sm:px-9 sm:pb-12 sm:pl-[112px]">
+                    <div className="mb-5 flex flex-wrap gap-2">
+                      {entry.stack.map((tech) => (
+                        <span
+                          key={tech}
+                          className={
+                            entry.accent === "blue" ? "chip chip-blue" : "chip"
+                          }
                         >
-                          <div
-                            className="font-body text-[1.375rem] font-medium tracking-[-0.02em] sm:text-[1.625rem]"
-                            style={{ color: accentInk }}
-                          >
-                            {metric.value}
-                          </div>
-                          <div className="mt-1 font-body text-[0.6875rem] leading-tight text-muted">
-                            {metric.label}
-                          </div>
-                        </div>
+                          {tech}
+                        </span>
                       ))}
                     </div>
-                  </div>
-                )}
+                    <ul className="flex max-w-[70ch] flex-col gap-4">
+                      {entry.bullets.map((bullet, i) => (
+                        <li
+                          key={i}
+                          className="grid grid-cols-[10px_1fr] gap-4 font-body text-copy text-muted"
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="mt-[9px] block h-[6px] w-[6px] rounded-full"
+                            style={{ background: accent }}
+                          />
+                          <span>{renderBoldText(bullet.text, bullet.bold)}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Outside the disclosure button above, not inside
+                        it — a link nested in a button is not a valid
+                        interactive control. */}
+                    <Link
+                      href={`/work/${entry.slug}`}
+                      className="btn-primary mt-8 inline-flex w-fit items-center gap-2 px-6 py-3 font-body text-[0.8125rem] font-medium"
+                    >
+                      Read the full term
+                      <ArrowUpRight size={15} strokeWidth={2} />
+                    </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}

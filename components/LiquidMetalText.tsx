@@ -7,9 +7,19 @@ interface LiquidMetalTextProps {
 
 /* Ink wordmark with an accent sheen sweeping through it. The chrome
    version read as a different brand from the rest of the page; this
-   keeps the same liquid displacement on the site's own two accents. */
+   keeps the same liquid displacement on the site's own two accents.
+
+   background-size on .liquid-metal__fill is 250%, so at rest
+   (background-position 0%) only the gradient's 0%-40% band is ever
+   visible — the rest only scrolls into view on hover. The colour
+   stops used to start at 32%, which put part of that transition
+   inside the always-visible 0-40% band and showed up as an
+   unintended colour break wherever a name happened to land there
+   (e.g. mid-surname on "ARNEJA"). Starting the transition at 42%
+   keeps the resting state solid ink for any string, regardless of
+   length, and the colour only ever appears as the hover sweep. */
 const METAL_GRADIENT =
-  "linear-gradient(120deg, #101114 0%, #101114 32%, #FF6B35 44%, #3D5AFE 54%, #101114 66%, #101114 100%)";
+  "linear-gradient(120deg, #101114 0%, #101114 42%, #FF6B35 54%, #3D5AFE 64%, #101114 76%, #101114 100%)";
 
 /**
  * The displacement is static and the sheen is a one-shot on hover.

@@ -93,7 +93,7 @@ export default function Atmosphere() {
               "--blob-color": "#A9BDD6",
               width: "80%",
               height: "80%",
-              top: "10%",
+              top: "27%",
               left: "10%",
               transformOrigin: "center center",
               animation: "moveVertical 14s ease infinite",
@@ -108,7 +108,7 @@ export default function Atmosphere() {
               "--blob-color": "#8CA6C6",
               width: "80%",
               height: "80%",
-              top: "calc(50% - 40%)",
+              top: "calc(67% - 40%)",
               left: "calc(50% - 40%)",
               transformOrigin: "calc(50% - 400px)",
               animation: "moveInCircle 20s reverse infinite",
@@ -123,7 +123,7 @@ export default function Atmosphere() {
               "--blob-color": "#CFDAE6",
               width: "80%",
               height: "80%",
-              top: "calc(50% - 40%)",
+              top: "calc(67% - 40%)",
               left: "calc(50% - 40% + 200px)",
               opacity: 0.8,
               transformOrigin: "calc(50% + 400px)",
@@ -138,7 +138,7 @@ export default function Atmosphere() {
               "--blob-color": "#B8C9DC",
               width: "80%",
               height: "80%",
-              top: "calc(50% - 20%)",
+              top: "calc(67% - 20%)",
               left: "calc(50% - 40%)",
               opacity: 0.7,
               transformOrigin: "calc(50% - 200px)",
@@ -155,7 +155,7 @@ export default function Atmosphere() {
               "--blob-color": "var(--color-accent)",
               width: "46%",
               height: "46%",
-              top: "calc(50% - 23%)",
+              top: "calc(67% - 23%)",
               left: "calc(50% - 23%)",
               opacity: 0.5,
               transformOrigin: "calc(50% - 800px) calc(50% + 200px)",
@@ -167,8 +167,11 @@ export default function Atmosphere() {
         {/* The one blue blob. It used to chase the cursor; the page now
             answers the pointer in exactly one place — the spotlight on
             a project card, which is anchored to the thing it belongs
-            to. Anchored here at the centre, where the chase began, so
-            the field's composition is unchanged. */}
+            to. Shifted left and dimmed relative to the rest of the
+            field: centred, it sat squarely behind the About section's
+            body copy and cut into reading contrast. Left of centre it
+            sits nearer the portrait glass instead, which already
+            absorbs it. */}
         <div
           className="gradient-blob"
           style={
@@ -176,9 +179,9 @@ export default function Atmosphere() {
               "--blob-color": "var(--color-accent-2)",
               width: "36%",
               height: "36%",
-              top: "calc(50% - 18%)",
-              left: "calc(50% - 18%)",
-              opacity: 0.55,
+              top: "calc(67% - 18%)",
+              left: "calc(28% - 18%)",
+              opacity: 0.32,
             } as React.CSSProperties
           }
         />

@@ -1,9 +1,9 @@
 import Image from "next/image";
 
 const facts = [
-  { label: "PROGRAM", value: "BSc CS Co-op, StFX" },
-  { label: "GRADUATING", value: "December 2026" },
-  { label: "FOCUS", value: "Cloud, AI systems" },
+  { label: "EXPERIENCE", value: "3 co-op terms, Sobeys" },
+  { label: "FOCUS", value: "Cloud · Data · AI" },
+  { label: "AVAILABLE", value: "January 2027" },
 ];
 
 const PORTRAIT_FEATHER =
@@ -15,8 +15,8 @@ export default function About() {
       id="about"
       className="relative scroll-mt-24 px-6 py-16 sm:px-10 lg:px-14 lg:py-24"
     >
-      <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:gap-20">
-        <div className="glass glass-quiet relative mx-auto aspect-[4/5] w-full max-w-[380px] overflow-hidden lg:max-w-none">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-start gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:gap-20">
+        <div className="glass glass-quiet relative mx-auto aspect-[4/5] w-full max-w-[380px] overflow-hidden lg:mt-[0.4em] lg:max-w-none">
           <div
             aria-hidden="true"
             className="absolute inset-0"
@@ -41,25 +41,41 @@ export default function About() {
               maskRepeat: "no-repeat",
               WebkitMaskRepeat: "no-repeat",
             }}
-            priority={false}
+            /* The hero above is 90svh, so this portrait is the first
+               real image in the viewport and Next flags it as the LCP
+               element. Eager rather than lazy so it is not waiting on
+               the intersection observer to start fetching. */
+            priority
           />
         </div>
 
         <div>
-          <h2 className="mb-6 max-w-[24ch] font-display text-title font-bold">
-            Fourth-year CS Co-op at StFX, graduating December 2026.
+          <p className="mb-4 font-body text-label font-medium uppercase text-muted">
+            01 / About
+          </p>
+
+          <h2 className="about-heading mb-6 font-display font-bold">
+            Enterprise cloud experience, and projects I built end to end.
           </h2>
 
-          <p className="mb-4 max-w-[62ch] font-body text-lead text-muted">
-            Three co-op terms on Sobeys&apos; Cloud Centre of Excellence team
-            taught me that the best infrastructure work is invisible:
-            governance tooling, least-privilege access reviews, and automation
-            that keeps production boring.
+          <p className="about-body mb-4 font-body">
+            I spent three co-op terms on the Cloud Centre of Excellence team
+            at Sobeys, one of Canada&apos;s largest grocery retailers, working
+            on governance and automation across a large Azure estate —
+            identity and access management, policy enforcement, Databricks
+            provisioning, and cleaning up infrastructure at a scale where
+            nothing can be done by hand.
           </p>
-          <p className="mb-9 max-w-[62ch] font-body text-lead text-muted">
-            Outside of cloud work I build ML systems end to end. Training
-            models, wrapping them in APIs, and shipping them in containers so
-            they actually run somewhere other than a notebook.
+          <p className="about-body mb-4 font-body">
+            Outside of work I build machine learning systems the whole way
+            through — training the model, wrapping it in a FastAPI service,
+            containerizing it with Docker, and deploying it to the cloud so
+            it runs as a real endpoint rather than a script on my laptop.
+          </p>
+          <p className="about-body mb-9 font-body">
+            I&apos;m graduating in December 2026 and looking for a new-grad
+            role in cloud, backend, data, or ML engineering, starting January
+            2027.
           </p>
 
           <div className="glass grid grid-cols-1 overflow-hidden sm:grid-cols-3">

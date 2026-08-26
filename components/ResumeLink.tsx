@@ -1,4 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
 import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
 
 type Tone = "solid" | "glass";
@@ -6,8 +5,6 @@ type Tone = "solid" | "glass";
 interface ResumeLinkProps {
   tone: Tone;
   className?: string;
-  /** The nav's pill is compact and carries no arrow. */
-  showArrow?: boolean;
   onNavigate?: () => void;
 }
 
@@ -46,7 +43,6 @@ const RING: Record<Tone, { on: string; off: string }> = {
 export default function ResumeLink({
   tone,
   className = "",
-  showArrow = true,
   onNavigate,
 }: ResumeLinkProps) {
   const shared = `inline-flex items-center gap-2 whitespace-nowrap rounded-chip font-body font-medium ${className}`;
@@ -55,12 +51,14 @@ export default function ResumeLink({
     return (
       <a
         href={RESUME_HREF}
+        download
+        target="_blank"
+        rel="noopener noreferrer"
         onClick={onNavigate}
         className={`${shared} ${ENABLED[tone]}`}
         style={RING[tone].on ? { boxShadow: RING[tone].on } : undefined}
       >
-        Résumé
-        {showArrow && <ArrowUpRight size={15} strokeWidth={2} />}
+        Résumé <span aria-hidden="true">↓</span>
       </a>
     );
   }
