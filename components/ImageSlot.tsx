@@ -9,6 +9,10 @@ interface ImageSlotProps {
   /** CSS object-position, for screenshots wider than the 16/10 frame
    *  where a centred crop would cut into the content that matters. */
   objectPosition?: string;
+  /** "cover" fills the frame and crops; "contain" letterboxes instead so
+   *  the whole image stays visible — for photos where nothing should be
+   *  cut off, at the cost of empty bars on the frame's short axis. */
+  fit?: "cover" | "contain";
 }
 
 /**
@@ -22,16 +26,24 @@ export default function ImageSlot({
   alt,
   className,
   objectPosition = "50% 50%",
+  fit = "cover",
 }: ImageSlotProps) {
   if (src) {
     return (
-      <div className={`relative overflow-hidden ${className ?? ""}`}>
+      <div
+        className={`relative overflow-hidden ${className ?? ""}`}
+        style={
+          fit === "contain"
+            ? { background: "color-mix(in srgb, var(--color-surface) 60%, transparent)" }
+            : undefined
+        }
+      >
         <Image
           src={src}
           alt={alt ?? ""}
           fill
           sizes="(max-width: 768px) 100vw, 600px"
-          className="object-cover"
+          className={fit === "contain" ? "object-contain" : "object-cover"}
           style={{ objectPosition }}
         />
       </div>

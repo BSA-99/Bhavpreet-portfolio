@@ -13,6 +13,14 @@ export interface WorkPhoto {
   caption: string;
   src?: string;
   alt?: string;
+  /** Crop bias for photos taller than the 16/10 gallery frame — full-body
+   *  portrait shots lose more than half their height to a centred crop,
+   *  so this keeps the subject's face in frame instead of their torso. */
+  imagePosition?: string;
+  /** CSS aspect-ratio matching the source file's own pixel dimensions
+   *  ("width / height"), so the gallery frame fits the photo exactly
+   *  instead of cropping it or letterboxing empty space around it. */
+  aspectRatio?: string;
 }
 
 export interface WorkEntry {
@@ -85,8 +93,18 @@ export const workEntries: WorkEntry[] = [
       },
     ],
     photos: [
-      { caption: "Governance tooling" },
-      { caption: "Team retirement sync" },
+      {
+        caption: "Governance tooling",
+        src: "/images/work/cloud-coe-2026-governance.jpg",
+        alt: "Bhavpreet in the Sobeys Stellarton office",
+        aspectRatio: "1050 / 1400",
+      },
+      {
+        caption: "Team retirement sync",
+        src: "/images/work/cloud-coe-2026-signage.jpg",
+        alt: "Bhavpreet outside the Sobeys office entrance",
+        aspectRatio: "1050 / 1400",
+      },
     ],
   },
   {
@@ -132,8 +150,18 @@ export const workEntries: WorkEntry[] = [
       },
     ],
     photos: [
-      { caption: "Store systems support" },
-      { caption: "Workflow documentation" },
+      {
+        caption: "Store systems support",
+        src: "/images/work/it-ops-store-systems.jpg",
+        alt: "Bhavpreet in front of the Sobeys Inc. sign",
+        aspectRatio: "1316 / 1195",
+      },
+      {
+        caption: "Workflow documentation",
+        src: "/images/work/it-ops-workflow.jpg",
+        alt: "Bhavpreet in the Sobeys Stellarton office",
+        aspectRatio: "1050 / 1400",
+      },
     ],
   },
   {
@@ -188,8 +216,12 @@ export const workEntries: WorkEntry[] = [
       },
     ],
     photos: [
-      { caption: "Azure environment setup" },
-      { caption: "Cost reporting pipeline" },
+      {
+        caption: "Azure environment setup",
+        src: "/images/work/cloud-coe-2025-office.jpg",
+        alt: "Bhavpreet outside the Sobeys office entrance",
+        aspectRatio: "1400 / 1050",
+      },
     ],
   },
 ];

@@ -207,24 +207,34 @@ export default function WorkDetail({ entry, previous, next }: WorkDetailProps) {
               </p>
             </motion.header>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7">
+            <div
+              className={
+                entry.photos.length === 1
+                  ? "grid grid-cols-1 justify-items-center gap-6 sm:gap-7"
+                  : "grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7"
+              }
+            >
               {entry.photos.map((photo, i) => (
                 <motion.figure
                   key={photo.caption}
                   {...rise(i)}
-                  className="glass glass-lift overflow-hidden"
+                  className={`glass glass-lift overflow-hidden ${
+                    entry.photos.length === 1 ? "w-full max-w-[560px]" : ""
+                  }`}
                 >
-                  <div className="relative z-[2] aspect-[16/10] border-b border-border">
+                  <div
+                    className="relative z-[2]"
+                    style={{ aspectRatio: photo.aspectRatio ?? "16 / 10" }}
+                  >
                     <ImageSlot
                       label={photo.caption}
                       src={photo.src}
                       alt={photo.alt ?? photo.caption}
                       className="h-full w-full"
+                      objectPosition={photo.imagePosition}
+                      fit="contain"
                     />
                   </div>
-                  <figcaption className="relative z-[2] px-7 py-5 font-body text-meta text-muted sm:px-8">
-                    {photo.caption}
-                  </figcaption>
                 </motion.figure>
               ))}
             </div>
