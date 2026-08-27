@@ -38,7 +38,12 @@ export const workEntries: WorkEntry[] = [
   {
     id: "cloud-coe-coop",
     slug: "cloud-centre-of-excellence-coop",
-    index: "01",
+    /* Numbering is chronological, not list order: 01 is the earliest
+       term. The list below runs newest-first, so these read 03, 02, 01
+       down the page — which is the point. Numbering by list position
+       put "01" on the most recent term, whose own summary opens "My
+       third co-op term". */
+    index: "03",
     role: "Cloud Centre of Excellence Co-op",
     company: "Sobeys Inc.",
     location: "Stellarton, NS",
@@ -60,7 +65,7 @@ export const workEntries: WorkEntry[] = [
     bullets: [
       {
         heading: "Automated identity sync for Databricks",
-        text: "Connected Databricks to the company's central identity system using SCIM, so user and group access updates automatically instead of being added and removed by hand.",
+        text: "Connected Databricks to the company's central identity system using SCIM — creating and nesting 5 identity groups — so user and group access updates automatically instead of being added and removed by hand.",
         bold: ["SCIM"],
       },
       {
@@ -70,12 +75,12 @@ export const workEntries: WorkEntry[] = [
       },
       {
         heading: "Fleet-wide resource discovery",
-        text: "Wrote queries using Azure Resource Graph and KQL to search the entire cloud environment for resources that were unused, untracked, or misconfigured.",
+        text: "Wrote Azure Resource Graph and KQL queries that swept 10 subscriptions for unused, untracked, and misconfigured resources — surfacing ~1,800 VMs for assessment and 137 stale diagnostic settings still pointed at a workspace that no longer existed.",
         bold: ["Azure Resource Graph", "KQL"],
       },
       {
         heading: "Cross-team infrastructure retirement",
-        text: "Coordinated the retirement of outdated infrastructure across multiple teams, each responsible for a different part of the environment.",
+        text: "Coordinated the retirement of outdated infrastructure across multiple teams, mapping 10 monitoring tests back to their owning teams to drive each to a confirmed decision.",
         bold: ["retirement of outdated infrastructure"],
       },
     ],
@@ -134,8 +139,8 @@ export const workEntries: WorkEntry[] = [
   {
     id: "cloud-devops-intern",
     slug: "cloud-devops-intern",
-    index: "03",
-    role: "Cloud & DevOps Intern, Cloud Centre of Excellence",
+    index: "01",
+    role: "Cloud Centre of Excellence Intern",
     company: "Sobeys Inc.",
     location: "Stellarton, NS",
     dates: "May 2025 - Aug 2025",
@@ -158,7 +163,7 @@ export const workEntries: WorkEntry[] = [
     bullets: [
       {
         heading: "Secure environment provisioning",
-        text: "Set up and secured Azure environments for internal teams, controlling who has access to what using RBAC and storing credentials safely in Azure Key Vault.",
+        text: "Set up and secured 4 Azure environments for internal teams, controlling who has access to what using RBAC and storing credentials safely in Azure Key Vault.",
         bold: ["RBAC", "Azure Key Vault"],
       },
       {
@@ -173,7 +178,7 @@ export const workEntries: WorkEntry[] = [
       },
       {
         heading: "Cost reporting pipelines",
-        text: "Built reporting pipelines in Azure Data Factory and Databricks, using SQL to turn large volumes of usage data into cost insights for the team.",
+        text: "Built reporting pipelines in Azure Data Factory and Databricks, using SQL to turn large volumes of usage data into cost insights for the team — work that included inventorying ~50 self-hosted integration runtimes and flagging 2 that were orphaned.",
         bold: ["Azure Data Factory", "Databricks"],
       },
       {
@@ -193,12 +198,20 @@ export function getWorkEntry(slug: string) {
   return workEntries.find((entry) => entry.slug === slug);
 }
 
-/** Previous and next terms, for the pager at the foot of a detail page. */
+/**
+ * Previous and next terms, for the pager at the foot of a detail page.
+ *
+ * `workEntries` is ordered newest-first, so array order runs backwards
+ * through time: the entry at `i + 1` is the *earlier* term. "Previous"
+ * and "next" here mean earlier and later chronologically, which is what
+ * the pager labels claim — indexing them the other way round is what
+ * made "Next term" point at the term that came before.
+ */
 export function getWorkNeighbours(slug: string) {
   const i = workEntries.findIndex((entry) => entry.slug === slug);
   if (i === -1) return { previous: undefined, next: undefined };
   return {
-    previous: i > 0 ? workEntries[i - 1] : undefined,
-    next: i < workEntries.length - 1 ? workEntries[i + 1] : undefined,
+    previous: i < workEntries.length - 1 ? workEntries[i + 1] : undefined,
+    next: i > 0 ? workEntries[i - 1] : undefined,
   };
 }

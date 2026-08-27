@@ -3,6 +3,7 @@ import About from "@/components/About";
 import WorkSection from "@/components/work/WorkSection";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
+import Education from "@/components/Education";
 import Contact from "@/components/Contact";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
         <WorkSection />
         <Projects />
         <Skills />
+        <Education />
       </main>
 
       {/* Outside <main> on purpose: a <footer> is only the page's

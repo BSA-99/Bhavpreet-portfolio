@@ -63,8 +63,8 @@ export default function About() {
             at Sobeys, one of Canada&apos;s largest grocery retailers, working
             on governance and automation across a large Azure estate —
             identity and access management, policy enforcement, Databricks
-            provisioning, and cleaning up infrastructure at a scale where
-            nothing can be done by hand.
+            provisioning, and cleaning up infrastructure across an estate of
+            10 subscriptions, at a scale where nothing can be done by hand.
           </p>
           <p className="about-body mb-4 font-body">
             Outside of work I build machine learning systems the whole way

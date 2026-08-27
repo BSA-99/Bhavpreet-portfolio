@@ -13,6 +13,7 @@ const sections = [
   { label: "Work", href: "/#work" },
   { label: "Projects", href: "/#projects" },
   { label: "Skills", href: "/#skills" },
+  { label: "Education", href: "/#education" },
 ];
 
 const elsewhere = [
@@ -27,6 +28,7 @@ const currently = [
   "Open to new-grad roles",
   "3 co-op terms completed, Sobeys",
   "CS Co-op at StFX, graduating Dec 2026",
+  "Co-founder, X Helping Hands",
   "Nova Scotia, Canada",
 ];
 

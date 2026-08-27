@@ -12,7 +12,11 @@ const EMPLOYER_META = [
   { label: "EMPLOYER", value: "Sobeys Inc." },
   { label: "LOCATION", value: "Stellarton, NS" },
   { label: "TERMS", value: "3" },
-  { label: "SPAN", value: "May 2025 - Aug 2026" },
+  /* Not "May 2025 - Aug 2026": a bare range reads as 16 continuous
+     months, and there is a Jan-Apr 2026 school term in the middle of
+     it. "Across" says the three terms sit inside that window without
+     claiming the window was worked end to end. */
+  { label: "SPAN", value: "Across May 2025 - Aug 2026" },
 ];
 
 const ACCENT_VAR: Record<string, string> = {
@@ -52,6 +56,9 @@ export default function WorkSection() {
     >
       <div className="mx-auto max-w-[1200px]">
         <header className="mb-10 max-w-[62ch] lg:mb-12">
+          <p className="mb-4 font-body text-label font-medium uppercase text-muted">
+            02 / Work
+          </p>
           <h2 className="mb-5 max-w-[24ch] font-display text-title font-bold">
             Three co-op terms building and automating enterprise cloud
             infrastructure.

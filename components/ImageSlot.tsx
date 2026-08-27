@@ -38,8 +38,16 @@ export default function ImageSlot({
     );
   }
 
+  /* The empty state used to print `label` — the image's description —
+     as visible text. Next to a card that has a real screenshot that
+     reads as stray body copy rather than as a reserved slot, and in the
+     work galleries it repeated the caption printed directly beneath it.
+     The description now names the slot for assistive tech only, and the
+     visible text says what the slot is actually waiting for. */
   return (
     <div
+      role="img"
+      aria-label={`${label} — not published yet`}
       className={`relative flex items-center justify-center overflow-hidden p-6 text-center ${className ?? ""}`}
       style={{
         background:
@@ -53,8 +61,11 @@ export default function ImageSlot({
           border: "1px dashed color-mix(in srgb, var(--color-text) 16%, transparent)",
         }}
       />
-      <span className="relative font-body text-label uppercase text-muted">
-        {label}
+      <span
+        aria-hidden="true"
+        className="relative font-body text-label uppercase text-muted opacity-70"
+      >
+        Preview coming soon
       </span>
     </div>
   );

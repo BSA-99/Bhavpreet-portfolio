@@ -14,16 +14,17 @@ import LiquidMetalText from "@/components/LiquidMetalText";
 import { ENTER, SNAP } from "@/lib/motion";
 import { lockScroll, subscribeScrollProgress, unlockScroll } from "@/lib/lenis";
 
-/* Numbers follow page order: About, Work, Projects, Skills, Contact.
-   Hrefs are root-relative rather than bare fragments so the nav still
-   works from the /work/[slug] detail pages, where a bare "#about" would
-   resolve against a page that has no such section. */
+/* Numbers follow page order: About, Work, Projects, Skills, Education,
+   Contact. Hrefs are root-relative rather than bare fragments so the
+   nav still works from the /work/[slug] detail pages, where a bare
+   "#about" would resolve against a page that has no such section. */
 const navLinks = [
   { number: "01", label: "About", href: "/#about" },
   { number: "02", label: "Work", href: "/#work" },
   { number: "03", label: "Projects", href: "/#projects" },
   { number: "04", label: "Skills", href: "/#skills" },
-  { number: "05", label: "Contact", href: "/#contact" },
+  { number: "05", label: "Education", href: "/#education" },
+  { number: "06", label: "Contact", href: "/#contact" },
 ];
 
 /** "/#about" -> "about". The nav hrefs carry the leading slash so they

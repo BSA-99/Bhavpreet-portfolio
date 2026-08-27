@@ -27,8 +27,9 @@ const projects = [
       "A word sense disambiguation model built on GlossBERT, using contextual embeddings to resolve ambiguous word meanings against dictionary definitions.",
     tags: ["NLP", "BERT", "PyTorch"],
     imageLabel: "GlossBERT demo screenshot",
+    image: "/images/glossbert-demo.png",
     accent: "blue" as const,
-    githubUrl: "#",
+    githubUrl: "https://github.com/BSA-99/word-sense-disambiguation",
   },
 ];
 
@@ -51,6 +52,9 @@ export default function Projects() {
     >
       <div className="mx-auto max-w-[1200px]">
         <header className="mb-10 max-w-[62ch] lg:mb-12">
+          <p className="mb-4 font-body text-label font-medium uppercase text-muted">
+            03 / Projects
+          </p>
           <h2 className="mb-5 max-w-[22ch] font-display text-title font-bold">
             Things I&apos;ve shipped.
           </h2>

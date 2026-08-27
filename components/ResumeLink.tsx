@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { RESUME_AVAILABLE, RESUME_HREF } from "@/lib/resume";
 
 type Tone = "solid" | "glass";
@@ -49,17 +50,14 @@ export default function ResumeLink({
 
   if (RESUME_AVAILABLE) {
     return (
-      <a
+      <Link
         href={RESUME_HREF}
-        download
-        target="_blank"
-        rel="noopener noreferrer"
         onClick={onNavigate}
         className={`${shared} ${ENABLED[tone]}`}
         style={RING[tone].on ? { boxShadow: RING[tone].on } : undefined}
       >
-        Résumé <span aria-hidden="true">↓</span>
-      </a>
+        Résumé <span aria-hidden="true">→</span>
+      </Link>
     );
   }
 
