@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import DotField from "@/components/DotField";
 import { ENTER } from "@/lib/motion";
 
 const degree = [
@@ -24,24 +25,25 @@ const coursework = [
   "Statistics",
 ];
 
-/* ICPC lists participation only, not placement — competing in a
-   regional at all is the signal; a mid-pack finish in a field that
-   includes graduate-heavy programs neither helps nor hurts, and
-   volunteering the number invites a question worth not answering.
-
-   ICTC's year is left off rather than guessed — add it back once
-   confirmed. */
 const involvement = [
-  "ICPC Northeast North American Regional — competed with StFX teams, 2023 and 2024",
-  "ICTC Digital Youth Ambassador",
+  {
+    title: "Science Atlantic Mathematics, Statistics & Computer Science Conference",
+    detail:
+      "St. Francis Xavier University, Antigonish, NS — competed in 2023 and 2024, collaborating with post-secondary students from across Atlantic Canada.",
+  },
+  {
+    title: "International Collegiate Programming Contest (ICPC), Northeastern North American Regional",
+    detail:
+      "Université de Moncton, NB — represented StFX, placing 63rd of 93 teams.",
+  },
 ];
 
 /**
- * The supporting section, not a headline one — visually lighter than
- * Work or Projects on purpose. No accent washes, no hover lift, a
- * single glass-quiet rail rather than a full card system: the degree
- * and the courses are context for the sections above, not a new claim
- * competing with them.
+ * The supporting section, not a headline one — but it now shares the
+ * footer's shell (one glass panel, the same dot texture) rather than
+ * sitting bare on the page background, so the site's two "wrap-up"
+ * surfaces — where it ends and where it started — read as the same
+ * material.
  */
 export default function Education() {
   const reduce = useReducedMotion();
@@ -56,66 +58,68 @@ export default function Education() {
   return (
     <section
       id="education"
-      className="relative scroll-mt-24 px-6 py-14 sm:px-10 lg:px-14 lg:py-20"
+      className="relative scroll-mt-24 px-3 py-3 sm:px-5 sm:py-5"
     >
-      <div className="mx-auto max-w-[1200px]">
-        <header className="mb-8 max-w-[62ch] lg:mb-10">
-          <p className="mb-4 font-body text-label font-medium uppercase text-muted">
-            05 / Education
-          </p>
-          <h2 className="mb-4 max-w-[22ch] font-display text-title font-bold">
-            Where the foundation comes from.
-          </h2>
-        </header>
+      <div className="glass relative mx-auto max-w-[1200px] overflow-hidden px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+        <DotField tone="light" />
 
-        <motion.div
-          {...rise()}
-          className="glass glass-quiet grid grid-cols-2 overflow-hidden sm:grid-cols-4"
-        >
-          {degree.map((row, i) => (
-            <div
-              key={row.label}
-              className={`relative z-[2] px-6 py-6 sm:px-7 ${
-                i < degree.length - 1
-                  ? "border-b border-border sm:border-b-0 sm:border-r"
-                  : ""
-              } ${i === 1 ? "border-b sm:border-b-0" : ""}`}
-            >
-              <div className="mb-2 font-body text-label font-medium text-muted">
-                {row.label}
+        <div className="relative z-[2]">
+          <motion.header {...rise()} className="max-w-[62ch]">
+            <p className="mb-4 font-body text-label font-medium uppercase text-muted">
+              05 / Education
+            </p>
+            <h2 className="max-w-[22ch] font-display text-title font-bold">
+              Where the foundation comes from.
+            </h2>
+          </motion.header>
+
+          <motion.div
+            {...rise(0.06)}
+            className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border pt-9 sm:grid-cols-4 lg:pt-10"
+          >
+            {degree.map((row) => (
+              <div key={row.label}>
+                <div className="mb-2 font-body text-label font-medium uppercase text-muted">
+                  {row.label}
+                </div>
+                <div className="font-display text-[0.9375rem] font-bold leading-snug">
+                  {row.value}
+                </div>
               </div>
-              <div className="font-display text-[0.9375rem] font-bold leading-snug">
-                {row.value}
-              </div>
+            ))}
+          </motion.div>
+
+          <motion.div {...rise(0.12)} className="mt-10">
+            <h3 className="mb-4 font-body text-label font-medium uppercase text-muted">
+              Relevant coursework
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {coursework.map((course) => (
+                <span key={course} className="chip chip-neutral">
+                  {course}
+                </span>
+              ))}
             </div>
-          ))}
-        </motion.div>
+          </motion.div>
 
-        <motion.div {...rise(0.06)} className="mt-8">
-          <h3 className="mb-4 font-body text-label font-medium uppercase text-muted">
-            Relevant coursework
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {coursework.map((course) => (
-              <span key={course} className="chip chip-neutral">
-                {course}
-              </span>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div {...rise(0.12)} className="mt-8">
-          <h3 className="mb-4 font-body text-label font-medium uppercase text-muted">
-            Involvement
-          </h3>
-          <ul className="flex flex-col gap-2.5">
-            {involvement.map((line) => (
-              <li key={line} className="font-body text-copy text-muted">
-                {line}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+          <motion.div {...rise(0.18)} className="mt-10">
+            <h3 className="mb-4 font-body text-label font-medium uppercase text-muted">
+              Involvement
+            </h3>
+            <ul className="flex flex-col gap-5">
+              {involvement.map((item) => (
+                <li key={item.title}>
+                  <p className="font-display text-[0.9375rem] font-bold leading-snug">
+                    {item.title}
+                  </p>
+                  <p className="mt-1 font-body text-copy text-muted">
+                    {item.detail}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
