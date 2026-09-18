@@ -682,3 +682,43 @@ body {
     transition: none !important;
   }
 }
+
+/* ============================================================
+   SAFARI COMPOSITING BUDGET
+   `-webkit-touch-callout` parses only in WebKit, so this reaches
+   Safari on macOS and iOS and nothing else — Chromium and Firefox
+   keep the full recipe above untouched.
+
+   WebKit re-rasterises backdrop-filter and SVG filters far more
+   eagerly than Chromium does, and this page stacks both: a dozen-odd
+   `.glass` panels down the length of it (several visible at once),
+   one of them pinned in `nav` for the entire scroll, all sitting on
+   top of an atmosphere that never stops moving. Chromium's compositor
+   absorbs that; WebKit repaints it. Trimming the blur radii (not
+   removing them) cuts the pixels WebKit has to recompute per frame
+   without the page reading as flat.
+   ============================================================ */
+@supports (-webkit-touch-callout: none) {
+  :root {
+    --glass-blur: blur(14px) saturate(150%);
+  }
+
+  .glass-deep {
+    --glass-blur: blur(20px) saturate(160%);
+  }
+
+  /* Same goo merge, half the blur radius stacked on top of it — the
+     softness mostly comes from the blobs' own radial-gradient falloff,
+     not this outer pass. */
+  .atmosphere-field {
+    filter: url(#atmosphere-goo) blur(18px) !important;
+  }
+
+  /* The one panel that is on screen for the entire scroll. Letting
+     WebKit keep it on its own layer avoids folding its blur into the
+     page's main repaint every time something scrolls or the
+     atmosphere shifts underneath it. */
+  nav.glass {
+    will-change: backdrop-filter;
+  }
+}

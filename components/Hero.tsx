@@ -61,7 +61,10 @@ export default function Hero() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative flex min-h-[90svh] flex-col px-3 pb-3 pt-3 sm:px-5 sm:pb-5 sm:pt-4">
+    <section
+      id="hero"
+      className="relative flex min-h-[90svh] flex-col px-3 pb-3 pt-3 sm:px-5 sm:pb-5 sm:pt-4"
+    >
       <div className="glass glass-deep relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-16 sm:px-10">
         <DotField tone="light" />
 

@@ -81,7 +81,7 @@ export default function Atmosphere() {
 
       <div
         ref={fieldRef}
-        className="absolute inset-0"
+        className="atmosphere-field absolute inset-0"
         style={{ filter: `url(#${GOO_FILTER_ID}) blur(40px)` }}
       >
         {/* Slate. The largest mass, and the one that sets the page's
@@ -96,7 +96,7 @@ export default function Atmosphere() {
               top: "27%",
               left: "10%",
               transformOrigin: "center center",
-              animation: "moveVertical 14s ease infinite",
+              animation: "moveVertical 11.2s ease infinite",
             } as React.CSSProperties
           }
         />
@@ -111,7 +111,7 @@ export default function Atmosphere() {
               top: "calc(67% - 40%)",
               left: "calc(50% - 40%)",
               transformOrigin: "calc(50% - 400px)",
-              animation: "moveInCircle 20s reverse infinite",
+              animation: "moveInCircle 16s reverse infinite",
             } as React.CSSProperties
           }
         />
@@ -125,9 +125,9 @@ export default function Atmosphere() {
               height: "80%",
               top: "calc(67% - 40%)",
               left: "calc(50% - 40% + 200px)",
-              opacity: 0.8,
+              opacity: 0.9,
               transformOrigin: "calc(50% + 400px)",
-              animation: "moveInCircle 18s linear infinite",
+              animation: "moveInCircle 14.4s linear infinite",
             } as React.CSSProperties
           }
         />
@@ -140,9 +140,9 @@ export default function Atmosphere() {
               height: "80%",
               top: "calc(67% - 20%)",
               left: "calc(50% - 40%)",
-              opacity: 0.7,
+              opacity: 0.8,
               transformOrigin: "calc(50% - 200px)",
-              animation: "moveHorizontal 18s ease infinite",
+              animation: "moveHorizontal 14.4s ease infinite",
             } as React.CSSProperties
           }
         />
@@ -157,9 +157,9 @@ export default function Atmosphere() {
               height: "46%",
               top: "calc(67% - 23%)",
               left: "calc(50% - 23%)",
-              opacity: 0.5,
+              opacity: 0.65,
               transformOrigin: "calc(50% - 800px) calc(50% + 200px)",
-              animation: "moveInCircle 14s ease infinite",
+              animation: "moveInCircle 11.2s ease infinite",
             } as React.CSSProperties
           }
         />
@@ -181,7 +181,7 @@ export default function Atmosphere() {
               height: "36%",
               top: "calc(67% - 18%)",
               left: "calc(28% - 18%)",
-              opacity: 0.32,
+              opacity: 0.42,
             } as React.CSSProperties
           }
         />

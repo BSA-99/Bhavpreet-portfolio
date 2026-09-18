@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   AnimatePresence,
@@ -12,7 +12,12 @@ import {
 import ResumeLink from "@/components/ResumeLink";
 import LiquidMetalText from "@/components/LiquidMetalText";
 import { ENTER, SNAP } from "@/lib/motion";
-import { lockScroll, subscribeScrollProgress, unlockScroll } from "@/lib/lenis";
+import {
+  lockScroll,
+  subscribeScrollProgress,
+  subscribeScrollY,
+  unlockScroll,
+} from "@/lib/lenis";
 
 /* Numbers follow page order: About, Work, Projects, Skills, Education,
    Contact. Hrefs are root-relative rather than bare fragments so the
@@ -80,6 +85,47 @@ export default function Nav() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  /* Hide-on-scroll, but only past the hero — within it the pill also
+     reads as the panel's own top edge, so it stays put regardless of
+     direction. Below that, hides on any real downward move and
+     reappears the moment the reader scrolls up, so navigation is never
+     more than one wheel-tick away. */
+  const [navHidden, setNavHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const heroBottomRef = useRef(0);
+
+  useEffect(() => {
+    const measureHeroBottom = () => {
+      const hero = document.getElementById("hero");
+      heroBottomRef.current = hero
+        ? hero.getBoundingClientRect().bottom + window.scrollY
+        : 0;
+    };
+    measureHeroBottom();
+    window.addEventListener("resize", measureHeroBottom);
+    return () => window.removeEventListener("resize", measureHeroBottom);
+  }, []);
+
+  useEffect(() => {
+    const DIRECTION_THRESHOLD = 8;
+
+    return subscribeScrollY((y) => {
+      const delta = y - lastScrollYRef.current;
+      lastScrollYRef.current = y;
+
+      if (isOpen || y < heroBottomRef.current) {
+        setNavHidden(false);
+        return;
+      }
+
+      if (delta > DIRECTION_THRESHOLD) {
+        setNavHidden(true);
+      } else if (delta < -DIRECTION_THRESHOLD) {
+        setNavHidden(false);
+      }
+    });
+  }, [isOpen]);
+
   useEffect(() => {
     const sections = navLinks
       .map((link) => document.getElementById(sectionId(link.href)))
@@ -123,8 +169,17 @@ export default function Nav() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-        <nav className="glass relative mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-4 overflow-hidden px-4 sm:h-[64px] sm:px-5">
+      <motion.header
+        animate={{ y: navHidden ? "-130%" : "0%" }}
+        transition={reduce ? { duration: 0 } : SNAP}
+        className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4"
+      >
+        {/* `.glass-deep` rather than the base `.glass` — the nav is fixed,
+            so the Hero's own `.glass-deep` panel sits directly behind it
+            for the whole first viewport (Hero starts at y=0; this header
+            is out of flow). The base fill was too close in opacity to
+            read as a separate surface against that panel. */}
+        <nav className="glass glass-deep relative mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-4 overflow-hidden px-4 sm:h-[64px] sm:px-5">
           {/* Read progress, clipped to the pill's own rounding. It is
               driven straight off scroll rather than animating on its
               own, so it stays legible under reduced motion — only the
@@ -141,7 +196,7 @@ export default function Nav() {
 
           <Link
             href="/"
-            className="relative z-[2] font-display text-[0.6875rem] font-bold tracking-tight whitespace-nowrap sm:text-[0.8125rem] lg:text-[0.9375rem]"
+            className="relative z-[2] font-display text-[0.8125rem] font-bold tracking-tight whitespace-nowrap sm:text-[0.875rem] lg:text-[1rem]"
           >
             <LiquidMetalText text="BHAVPREET SINGH ARNEJA" />
           </Link>
@@ -153,7 +208,7 @@ export default function Nav() {
                 <li key={link.href} className="relative">
                   <a
                     href={link.href}
-                    className={`font-body text-[0.875rem] transition-colors duration-200 ${
+                    className={`font-body text-[0.9375rem] font-medium transition-colors duration-200 ${
                       isActive ? "text-text" : "text-muted hover:text-text"
                     }`}
                   >
@@ -203,7 +258,7 @@ export default function Nav() {
             </button>
           </div>
         </nav>
-      </header>
+      </motion.header>
 
       <AnimatePresence>
         {isOpen && (
@@ -213,38 +268,44 @@ export default function Nav() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.28, ease: "easeOut" }}
-            className="fixed inset-0 z-40 flex flex-col justify-center bg-bg/85 px-8 backdrop-blur-2xl lg:hidden"
+            className="fixed inset-0 z-40 px-3 pb-3 pt-[80px] sm:px-5 sm:pb-5 sm:pt-[88px] lg:hidden"
           >
-            <motion.ul
-              variants={container}
-              initial="hidden"
-              animate="show"
-              exit="hidden"
-              className="flex flex-col gap-7"
-            >
-              {navLinks.map((link) => (
-                <motion.li key={link.href} variants={item}>
-                  <a
-                    href={link.href}
-                    onClick={closeMenu}
-                    className="font-display text-[2.125rem] font-bold tracking-[-0.03em]"
-                  >
-                    <span className="font-body text-base text-accent-2-ink">
-                      {link.number}
-                    </span>{" "}
-                    {link.label}
-                  </a>
-                </motion.li>
-              ))}
+            {/* Same glass recipe and outer inset as the nav pill and the
+                Hero panel above it, rather than a plain blurred overlay —
+                this is the site's one material, so the menu should read
+                as another pane of it, not a different surface. */}
+            <div className="glass glass-deep relative flex h-full flex-col justify-center overflow-y-auto px-8 py-10 sm:px-10">
+              <motion.ul
+                variants={container}
+                initial="hidden"
+                animate="show"
+                exit="hidden"
+                className="relative z-[2] flex flex-col gap-7"
+              >
+                {navLinks.map((link) => (
+                  <motion.li key={link.href} variants={item}>
+                    <a
+                      href={link.href}
+                      onClick={closeMenu}
+                      className="font-display text-[2.125rem] font-bold tracking-[-0.03em]"
+                    >
+                      <span className="font-body text-base text-accent-2-ink">
+                        {link.number}
+                      </span>{" "}
+                      {link.label}
+                    </a>
+                  </motion.li>
+                ))}
 
-              <motion.li variants={item} className="pt-4">
-                <ResumeLink
-                  tone="solid"
-                  onNavigate={closeMenu}
-                  className="px-6 py-3 text-base"
-                />
-              </motion.li>
-            </motion.ul>
+                <motion.li variants={item} className="pt-4">
+                  <ResumeLink
+                    tone="solid"
+                    onNavigate={closeMenu}
+                    className="px-6 py-3 text-base"
+                  />
+                </motion.li>
+              </motion.ul>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

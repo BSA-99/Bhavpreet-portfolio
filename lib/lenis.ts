@@ -31,6 +31,17 @@ type ProgressListener = (progress: number) => void;
 
 const progressListeners = new Set<ProgressListener>();
 
+/* Raw scroll offset, for consumers that need actual pixels (a hide-on-
+   scroll nav comparing against a section's boundary) rather than the
+   0-1 progress above. Broadcast from the same rAF tick for the same
+   reason `progress` is: Lenis suppresses the native `scroll` event, so
+   a listener-based reader would miss anchor jumps and programmatic
+   `scrollTo`s. */
+type ScrollYListener = (scrollY: number) => void;
+
+const scrollYListeners = new Set<ScrollYListener>();
+let lastScrollYBroadcast = -1;
+
 /* Lenis's own `progress` is not used: Lenis caches the scrollable limit
    when it initialises, which here is before web fonts swap and before
    the portrait reserves its box, so that denominator ends up several
@@ -54,9 +65,16 @@ function broadcast() {
   const value = currentProgress();
   /* Only on a visible change. This runs once a frame, and most frames
      of a settled page have nothing to say. */
-  if (Math.abs(value - lastBroadcast) < 0.0005) return;
-  lastBroadcast = value;
-  for (const listener of progressListeners) listener(value);
+  if (Math.abs(value - lastBroadcast) >= 0.0005) {
+    lastBroadcast = value;
+    for (const listener of progressListeners) listener(value);
+  }
+
+  const y = window.scrollY;
+  if (y !== lastScrollYBroadcast) {
+    lastScrollYBroadcast = y;
+    for (const listener of scrollYListeners) listener(y);
+  }
 }
 
 /**
@@ -79,6 +97,7 @@ export function setLenis(next: Lenis | null) {
   if (!next) {
     lockCount = 0;
     lastBroadcast = -1;
+    lastScrollYBroadcast = -1;
     return;
   }
 
@@ -91,6 +110,15 @@ export function subscribeScrollProgress(listener: ProgressListener) {
   listener(currentProgress());
   return () => {
     progressListeners.delete(listener);
+  };
+}
+
+/** Returns an unsubscribe function. */
+export function subscribeScrollY(listener: ScrollYListener) {
+  scrollYListeners.add(listener);
+  listener(window.scrollY);
+  return () => {
+    scrollYListeners.delete(listener);
   };
 }
 

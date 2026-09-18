@@ -28,9 +28,30 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_URL = "https://bhavpreet-portfolio.vercel.app";
+const TITLE = "Bhavpreet Singh Arneja";
+const DESCRIPTION = "Cloud and AI infrastructure. Portfolio.";
+
 export const metadata: Metadata = {
-  title: "Bhavpreet Singh Arneja",
-  description: "Cloud and AI infrastructure. Portfolio.",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    siteName: TITLE,
+    // Image comes from app/opengraph-image.tsx — Next picks that file
+    // convention up automatically and generates the og:image/twitter:image
+    // tags from it, so it isn't repeated here.
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
