@@ -61,7 +61,7 @@ export default function Atmosphere() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
       style={{
-        background: "linear-gradient(40deg, #FFFFFF, #FFFFFF 46%, #EEF2F7)",
+        background: "linear-gradient(40deg, #FFFFFF, #FFFFFF 42%, #DDE5F0)",
       }}
     >
       <svg className="absolute h-0 w-0">
@@ -85,12 +85,14 @@ export default function Atmosphere() {
         style={{ filter: `url(#${GOO_FILTER_ID}) blur(40px)` }}
       >
         {/* Slate. The largest mass, and the one that sets the page's
-            cool-neutral temperature. */}
+            cool-neutral temperature. Deepened from the original pale
+            #A9BDD6 — under a projector's crushed contrast a tint this
+            close to white reads as no colour at all. */}
         <div
           className="gradient-blob"
           style={
             {
-              "--blob-color": "#A9BDD6",
+              "--blob-color": "#7E9BC4",
               width: "80%",
               height: "80%",
               top: "27%",
@@ -105,7 +107,7 @@ export default function Atmosphere() {
           className="gradient-blob"
           style={
             {
-              "--blob-color": "#8CA6C6",
+              "--blob-color": "#5E82B0",
               width: "80%",
               height: "80%",
               top: "calc(67% - 40%)",
@@ -120,7 +122,7 @@ export default function Atmosphere() {
           className="gradient-blob"
           style={
             {
-              "--blob-color": "#CFDAE6",
+              "--blob-color": "#A6BBDA",
               width: "80%",
               height: "80%",
               top: "calc(67% - 40%)",
@@ -135,7 +137,7 @@ export default function Atmosphere() {
           className="gradient-blob"
           style={
             {
-              "--blob-color": "#B8C9DC",
+              "--blob-color": "#8CA9CE",
               width: "80%",
               height: "80%",
               top: "calc(67% - 20%)",
@@ -157,7 +159,7 @@ export default function Atmosphere() {
               height: "46%",
               top: "calc(67% - 23%)",
               left: "calc(50% - 23%)",
-              opacity: 0.65,
+              opacity: 0.75,
               transformOrigin: "calc(50% - 800px) calc(50% + 200px)",
               animation: "moveInCircle 11.2s ease infinite",
             } as React.CSSProperties
@@ -181,7 +183,7 @@ export default function Atmosphere() {
               height: "36%",
               top: "calc(67% - 18%)",
               left: "calc(28% - 18%)",
-              opacity: 0.42,
+              opacity: 0.52,
             } as React.CSSProperties
           }
         />
@@ -194,7 +196,7 @@ export default function Atmosphere() {
           backgroundSize: "140px 140px",
           backgroundRepeat: "repeat",
           mixBlendMode: "multiply",
-          opacity: 0.1,
+          opacity: 0.16,
         }}
       />
     </div>

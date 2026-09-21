@@ -31,9 +31,9 @@ const TONES: Record<Tone, {
   },
   light: {
     stroke: "16,17,20",
-    base: 0.07,
-    gain: 0.13,
-    bloom: ["rgba(61,90,254,0.10)", "rgba(61,90,254,0)"],
+    base: 0.12,
+    gain: 0.22,
+    bloom: ["rgba(61,90,254,0.16)", "rgba(61,90,254,0)"],
   },
 };
 
