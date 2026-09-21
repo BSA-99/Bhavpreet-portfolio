@@ -52,7 +52,7 @@ export const workEntries: WorkEntry[] = [
        put "01" on the most recent term, whose own summary opens "My
        third co-op term". */
     index: "03",
-    role: "Cloud Centre of Excellence Co-op",
+    role: "Cloud Administrator",
     company: "Sobeys Inc.",
     location: "Stellarton, NS",
     dates: "May 2026 - Aug 2026",
@@ -94,10 +94,10 @@ export const workEntries: WorkEntry[] = [
     ],
     photos: [
       {
-        caption: "Governance tooling",
-        src: "/images/work/cloud-coe-2026-governance.jpg",
-        alt: "Bhavpreet in the Sobeys Stellarton office",
-        aspectRatio: "1050 / 1400",
+        caption: "Award recognition",
+        src: "/images/work/cloud-coe-2026-award.jpg",
+        alt: "Bhavpreet receiving an award in front of the Sobeys sign",
+        aspectRatio: "572 / 751",
       },
       {
         caption: "Team retirement sync",
@@ -168,7 +168,7 @@ export const workEntries: WorkEntry[] = [
     id: "cloud-devops-intern",
     slug: "cloud-devops-intern",
     index: "01",
-    role: "Cloud Centre of Excellence Intern",
+    role: "Cloud & DevOps Intern",
     company: "Sobeys Inc.",
     location: "Stellarton, NS",
     dates: "May 2025 - Aug 2025",
